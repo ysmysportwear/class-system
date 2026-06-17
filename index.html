@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>轮滑俱乐部课消系统</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f0f2f5;--card:#fff;--text:#1a1a1a;--text2:#555;--text3:#999;--border:#e8e8e3;--green:#0F6E56;--green-bg:#E1F5EE;--blue:#378ADD;--blue-bg:#E6F1FB;--red:#E24B4A;--red-bg:#FCEBEB;--orange:#D4850B;--orange-bg:#FFF8E1;--purple:#7B61FF;--purple-bg:#F0EAFF;--radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06)}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.page{max-width:420px;margin:0 auto;padding:12px 14px 80px}
+
+/* Header */
+.header{text-align:center;padding:16px 0 8px}
+.header h1{font-size:18px;font-weight:700;color:var(--green);letter-spacing:2px}
+.header .sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Team Bar */
+.team-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow)}
+.team-bar .code{font-weight:700;color:var(--green);font-size:14px;flex:1}
+.team-bar .role-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.team-bar .role-tag.coach{background:var(--blue-bg);color:var(--blue)}
+.team-bar .role-tag.parent{background:var(--green-bg);color:var(--green)}
+.team-bar .role-tag.boss{background:var(--purple-bg);color:var(--purple)}
+.team-bar .btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;background:var(--bg);color:var(--text2)}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.card h3{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.card h3 .icon{font-size:16px}
+
+/* Stats Row */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .num{font-size:28px;font-weight:700;color:var(--green)}
+.stat-card .num.warn{color:var(--orange)}
+.stat-card .num.danger{color:var(--red)}
+.stat-card .lbl{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Student List */
+.student-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:10px}
+.student-item:last-child{border-bottom:none}
+.student-item .info{flex:1;min-width:0}
+.student-item .name{font-weight:600;font-size:14px}
+.student-item .meta{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.student-item .remain{text-align:right;min-width:60px}
+.student-item .remain .num{font-size:18px;font-weight:700}
+.student-item .remain .lbl{font-size:10px;color:var(--text3)}
+.student-item .remain.low .num{color:var(--orange)}
+.student-item .remain.zero .num{color:var(--red)}
+.student-item .actions{display:flex;gap:4px}
+.student-item .btn-icon{width:30px;height:30px;border-radius:50%;border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.student-item .btn-icon.checkin{background:var(--green-bg);color:var(--green)}
+.student-item .btn-icon.edit{background:var(--blue-bg);color:var(--blue)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:10px 18px;border-radius:var(--radius);border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--green);color:#fff;width:100%}
+.btn-outline{background:var(--bg);color:var(--green);border:1px solid var(--green)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-sm{font-size:11px;padding:5px 12px}
+
+/* Search */
+.search-bar{display:flex;gap:6px;margin-bottom:10px}
+.search-bar input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;outline:none;background:var(--card)}
+.search-bar input:focus{border-color:var(--green)}
+.search-bar select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--card);outline:none}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:10px;background:var(--card);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow)}
+.tab{flex:1;text-align:center;padding:8px;font-size:12px;font-weight:600;border-radius:10px;cursor:pointer;color:var(--text3);transition:all .15s;border:none;background:none}
+.tab.active{background:var(--green);color:#fff}
+
+/* Modal */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--card);width:100%;max-width:420px;border-radius:16px 16px 0 0;padding:20px 16px 30px;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:16px;margin-bottom:14px;text-align:center}
+.modal .field{margin-bottom:12px}
+.modal .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:600}
+.modal .field input,.modal .field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;background:var(--bg)}
+.modal .field input:focus{border-color:var(--green)}
+.modal .row{display:flex;gap:8px}
+.modal .row .field{flex:1}
+.modal .actions{display:flex;gap:8px;margin-top:16px}
+
+/* Quick Check-in */
+.quick-checkin{padding:10px;background:var(--green-bg);border-radius:var(--radius);margin-bottom:10px;text-align:center}
+.quick-checkin .big-btn{display:block;width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:2px}
+.quick-checkin .big-btn:active{opacity:.9}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
+
+/* History item */
+.history-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between}
+.history-item:last-child{border-bottom:none}
+.history-item .date{color:var(--text2);min-width:80px}
+.history-item .detail{flex:1;text-align:right;color:var(--text3)}
+
+/* Float BTN */
+.float-btn{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--green);color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(15,110,86,.4);z-index:50;display:flex;align-items:center;justify-content:center}
+.float-btn:active{transform:scale(.9)}
+
+/* Badge */
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600}
+.badge.active{background:var(--green-bg);color:var(--green)}
+.badge.inactive{background:var(--red-bg);color:var(--red)}
+.badge.gold{background:var(--orange-bg);color:var(--orange)}
+
+/* Menu */
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.menu-item{background:var(--card);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:all .15s;border:none;font-size:13px;font-weight:600}
+.menu-item:active{transform:scale(.97)}
+.menu-item .icon{font-size:24px;display:block;margin-bottom:4px}
+
+.loading{text-align:center;padding:30px;color:var(--text3);font-size:13px}
+.empty{text-align:center;padding:30px;color:var(--text3);font-size:13px}
+.hidden{display:none!important}
+.text-right{text-align:right}
+.mt-8{margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="page" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>🛼 轮滑俱乐部课消系统</h1>
+    <div class="sub">Class Consumption System</div>
+  </div>
+
+  <!-- Team Bar -->
+  <div class="team-bar" id="teamBar">
+    <span style="font-size:12px;color:var(--text3)">团队码</span>
+    <span class="code" id="teamCodeDisplay">未加入</span>
+    <span class="role-tag coach hidden" id="roleCoach">教练</span>
+    <span class="role-tag parent hidden" id="roleParent">家长</span>
+    <span class="role-tag boss hidden" id="roleBoss">管理员</span>
+    <button class="btn-sm" onclick="showTeamModal()">切换</button>
+  </div>
+
+  <!-- Login / No Team -->
+  <div id="loginScreen" style="text-align:center;padding:40px 0">
+    <div style="font-size:48px;margin-bottom:12px">🔐</div>
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px">请输入团队码</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">由教练提供，用于关联团队数据</div>
+    <input id="teamCodeInput" type="text" placeholder="输入团队码（如：TEAM001）" style="width:100%;max-width:260px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;text-align:center;outline:none;text-transform:uppercase">
+    <div style="margin-top:10px">
+      <button class="btn btn-primary" onclick="joinTeam()" style="max-width:260px">加入团队</button>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--text3)">
+      <span style="cursor:pointer;text-decoration:underline" onclick="promptAdminLogin()">🔑 管理员登录</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent" class="hidden">
+    <!-- Dashboard -->
+    <div id="dashboardView">
+      <div class="stats-row" id="statsRow"></div>
+      
+      <div class="quick-checkin" id="quickCheckinArea">
+        <button class="big-btn" onclick="showCheckinModal()">📋 快速签到</button>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">点击选择学员，一键签到扣减</div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card" id="recentActivity">
+        <h3><span class="icon">📅</span>今日签到</h3>
+        <div id="todayList"><div class="loading">加载中...</div></div>
+      </div>
+    </div>
+
+    <!-- Student List -->
+    <div id="studentView" class="hidden">
+      <div class="search-bar">
+        <input id="studentSearch" type="text" placeholder="搜索学员姓名/电话..." oninput="renderStudents()">
+        <select id="studentFilter" onchange="renderStudents()">
+          <option value="all">全部</option>
+          <option value="active">在读</option>
+          <option value="low">课时不足</option>
+          <option value="zero">已用完</option>
+        </select>
+      </div>
+      <div id="studentList"><div class="loading">加载中...</div></div>
+    </div>
+
+    <!-- History View -->
+    <div id="historyView" class="hidden">
+      <div class="search-bar">
+        <input id="historySearch" type="date" onchange="renderHistory()">
+      </div>
+      <div id="historyList"><div class="loading">加载中...</div></div>
+    </div>
+
+    <!-- Payment View -->
+    <div id="paymentView" class="hidden">
+      <div id="paymentList"><div class="loading">加载中...</div></div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div id="bottomNav" class="hidden" style="position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding:4px 0;z-index:50;max-width:420px;margin:0 auto">
+    <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 首页</button>
+    <button class="tab" data-tab="students" onclick="switchTab('students')">👥 学员</button>
+    <button class="tab" data-tab="history" onclick="switchTab('history')">📅 记录</button>
+    <button class="tab" data-tab="payment" onclick="switchTab('payment')" id="tabPayment">💰 收费</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Add Student Modal -->
+<div class="modal-bg" id="studentModal">
+  <div class="modal">
+    <h3 id="studentModalTitle">添加学员</h3>
+    <div class="field"><label>学员姓名 *</label><input id="sName" placeholder="真实姓名"></div>
+    <div class="row">
+      <div class="field"><label>家长姓名</label><input id="sParent" placeholder="选填"></div>
+      <div class="field"><label>家长电话</label><input id="sPhone" placeholder="选填"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>课消模式 *</label><select id="sMode"><option value="sessions">按次数</option><option value="hours">按课时</option></select></div>
+      <div class="field"><label>课程数量 *</label><input id="sTotal" type="number" placeholder="如：20" min="1"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>单价（元）</label><input id="sPrice" type="number" placeholder="选填" step="0.01"></div>
+      <div class="field"><label>已付金额</label><input id="sPaid" type="number" placeholder="选填" step="0.01"></div>
+    </div>
+    <div class="field"><label>备注</label><input id="sNotes" placeholder="选填"></div>
+    <div class="actions">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal('studentModal')">取消</button>
+      <button class="btn btn-primary" style="flex:1" id="studentSubmitBtn" onclick="saveStudent()">保存</button>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="editStudentId">
+
+<!-- Check-in Modal -->
+<div class="modal-bg" id="checkinModal">
+  <div class="modal">
+    <h3>📋 快速签到</h3>
+    <div class="field"><label>选择学员</label>
+      <select id="checkinStudent" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+        <option value="">请选择</option>
+      </select>
+    </div>
+    <div class="field"><label>今日课程</label><input id="checkinDate" type="date"></div>
+    <div class="field"><label>扣减数量（默认1）</label><input id="checkinUnits" type="number" value="1" min="1"></div>
+    <div class="field"><label>教练/备注</label><input id="checkinNotes" placeholder="选填"></div>
+    <div class="actions">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal('checkinModal')">取消</button>
+      <button class="btn btn-primary" style="flex:1" onclick="doCheckin()">✅ 确认签到</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div class="modal-bg" id="adminModal">
+  <div class="modal">
+    <h3>🔑 管理员模式</h3>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:10px">可查看所有团队数据</div>
+    <div class="field"><label>管理员密码</label><input id="adminPw" type="password" placeholder="输入密码"></div>
+    <div class="actions">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal('adminModal')">取消</button>
+      <button class="btn btn-primary" style="flex:1" onclick="doAdminLogin()">登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-bg" id="paymentModal">
+  <div class="modal">
+    <h3>💰 新增缴费</h3>
+    <div class="field"><label>选择学员</label>
+      <select id="payStudent" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+        <option value="">请选择</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="field"><label>金额（元）</label><input id="payAmount" type="number" placeholder="0.00" step="0.01"></div>
+      <div class="field"><label>购买数量</label><input id="payUnits" type="number" placeholder="节/次" min="1"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>日期</label><input id="payDate" type="date"></div>
+      <div class="field"><label>方式</label><select id="payMethod"><option>微信</option><option>支付宝</option><option>现金</option><option>转账</option></select></div>
+    </div>
+    <div class="field"><label>备注</label><input id="payNotes" placeholder="选填"></div>
+    <div class="actions">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal('paymentModal')">取消</button>
+      <button class="btn btn-primary" style="flex:1" onclick="savePayment()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SUPABASE CONFIG =====
+var SB_URL='https://hndguaogudhribyimyrg.supabase.co';
+var SB_KEY='sb_publishable_ZDRzwrdUVmLKqo-Yht-03w_zy6u9iWP';
+var sb=null, sbOk=false;
+(function initSB(){
+  if(window.__sbLoadFailed){console.warn('Supabase CDN failed');return}
+  try{
+    sb=window.supabase.createClient(SB_URL,SB_KEY);
+    sb.from('students').select('id').limit(1).then(function(r){
+      sbOk=!r.error;
+      if(!sbOk) console.warn('[SB] connect test failed:',r.error);
+    });
+  }catch(e){console.warn('[SB] init error',e)}
+})();
+
+// ===== GLOBAL STATE =====
+var teamCode='';
+var role=''; // '' | 'coach' | 'boss'
+var isAdmin=false;
+var students=[];
+var todayAttendance=[];
+var payments=[];
+var currentTab='dashboard';
+
+// ===== SECURITY FUNCTIONS =====
+async function sha256(text){
+  var enc=new TextEncoder().encode(text);
+  var buf=await crypto.subtle.digest('SHA-256',enc);
+  return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+// ===== TOAST =====
+var toastTimer;
+function showToast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove('show')},2000);
+}
+
+// ===== TEAM CODE =====
+function initFromLocal(){
+  teamCode=localStorage.getItem('cc_team')||'';
+  role=localStorage.getItem('cc_role')||'';
+  isAdmin=role==='boss';
+  if(teamCode) showMain();
+}
+function joinTeam(){
+  var code=document.getElementById('teamCodeInput').value.trim().toUpperCase();
+  if(!code){showToast('请输入团队码');return}
+  teamCode=code;
+  localStorage.setItem('cc_team',teamCode);
+  role='';
+  isAdmin=false;
+  localStorage.removeItem('cc_role');
+  showMain();
+}
+function showTeamModal(){
+  document.getElementById('teamCodeInput').value='';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('mainContent').classList.add('hidden');
+  document.getElementById('bottomNav').classList.add('hidden');
+  teamCode='';role='';isAdmin=false;
+  localStorage.removeItem('cc_team');localStorage.removeItem('cc_role');
+}
+function showMain(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainContent').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  document.getElementById('teamCodeDisplay').textContent=teamCode;
+  updateRoleTags();
+  loadAll();
+}
+function updateRoleTags(){
+  document.getElementById('roleCoach').classList.toggle('hidden',!isAdmin);
+  document.getElementById('roleParent').classList.toggle('hidden',isAdmin);
+  document.getElementById('roleBoss').classList.toggle('hidden',!isAdmin);
+}
+
+// ===== ADMIN =====
+function promptAdminLogin(){
+  document.getElementById('adminModal').classList.add('show');
+  setTimeout(function(){document.getElementById('adminPw').focus()},200);
+}
+async function doAdminLogin(){
+  var pw=document.getElementById('adminPw').value;
+  if(!pw){showToast('请输入密码');return}
+  var hash=await sha256(pw);
+  if(hash==='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33'){
+    isAdmin=true;role='boss';
+    localStorage.setItem('cc_role','boss');
+    document.getElementById('adminModal').classList.remove('show');
+    document.getElementById('adminPw').value='';
+    if(!teamCode){teamCode='ADMIN';document.getElementById('teamCodeDisplay').textContent='ALL'}
+    showMain();
+    showToast('🔑 管理员已登录');
+  }else{
+    showToast('❌ 密码错误');
+  }
+  document.getElementById('adminPw').value='';
+}
+
+// ===== MODAL HELPERS =====
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+// ===== TAB SWITCHING =====
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('#bottomNav .tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab)});
+  document.getElementById('dashboardView').classList.toggle('hidden',tab!=='dashboard');
+  document.getElementById('studentView').classList.toggle('hidden',tab!=='students');
+  document.getElementById('historyView').classList.toggle('hidden',tab!=='history');
+  document.getElementById('paymentView').classList.toggle('hidden',tab!=='payment');
+  if(tab==='students') renderStudents();
+  if(tab==='history') renderHistory();
+  if(tab==='payment') renderPayments();
+  if(tab==='dashboard'){renderStats();renderToday()}
+}
+
+// ===== LOAD ALL DATA =====
+function loadAll(){
+  if(!sb||!sbOk){setTimeout(loadAll,1000);return}
+  loadStudents();
+  loadTodayAttendance();
+  loadPayments();
+}
+
+// ===== STUDENTS CRUD =====
+async function loadStudents(){
+  if(!sb||!sbOk||!teamCode) return;
+  var q=sb.from('students').select('*').order('created_at',{ascending:false});
+  if(!isAdmin) q=q.eq('team_code',teamCode);
+  var resp=await q;
+  if(!resp.error) students=resp.data||[];
+  renderStudents();
+  renderStats();
+}
+
+function renderStudents(){
+  var search=(document.getElementById('studentSearch').value||'').toLowerCase();
+  var filter=document.getElementById('studentFilter').value;
+  var list=students.filter(function(s){
+    if(search && s.name.toLowerCase().indexOf(search)<0 && (s.parent_phone||'').indexOf(search)<0) return false;
+    if(filter==='active' && s.status!=='active') return false;
+    if(filter==='low' && (s.total_units-s.used_units)>3) return false;
+    if(filter==='zero' && (s.total_units-s.used_units)>0) return false;
+    return true;
+  });
+  var el=document.getElementById('studentList');
+  if(!list.length){el.innerHTML='<div class="empty">暂无学员</div>';return}
+  var html='';
+  list.forEach(function(s){
+    var rem=s.total_units-s.used_units;
+    var cls=rem<=0?'zero':rem<=3?'low':'';
+    var lvl=rem<=0?'已用完':rem+' 节';
+    if(s.mode==='sessions') lvl=rem<=0?'已用完':rem+' 次';
+    html+='<div class="student-item">';
+    html+='<div class="info"><div class="name">'+escHtml(s.name)+'</div>';
+    html+='<div class="meta">'+escHtml(s.parent_name||'')+' '+escHtml(s.parent_phone||'')+' · '+(s.mode==='hours'?'课时':'次数')+'</div></div>';
+    html+='<div class="remain '+cls+'"><div class="num">'+rem+'</div><div class="lbl">'+lvl+'</div></div>';
+    html+='<div class="actions">';
+    if(isAdmin){
+      html+='<button class="btn-icon checkin" onclick="quickCheckin(\''+s.id+'\')" title="签到">✓</button>';
+      html+='<button class="btn-icon edit" onclick="editStudent(\''+s.id+'\')" title="编辑">✎</button>';
+    }
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+
+function showAddStudent(){
+  document.getElementById('studentModalTitle').textContent='添加学员';
+  document.getElementById('editStudentId').value='';
+  ['sName','sParent','sPhone','sTotal','sPrice','sPaid','sNotes'].forEach(function(id){document.getElementById(id).value=''});
+  document.getElementById('sMode').value='sessions';
+  openModal('studentModal');
+}
+function editStudent(id){
+  var s=students.find(function(x){return x.id===id});
+  if(!s) return;
+  document.getElementById('studentModalTitle').textContent='编辑学员';
+  document.getElementById('editStudentId').value=id;
+  document.getElementById('sName').value=s.name||'';
+  document.getElementById('sParent').value=s.parent_name||'';
+  document.getElementById('sPhone').value=s.parent_phone||'';
+  document.getElementById('sMode').value=s.mode||'sessions';
+  document.getElementById('sTotal').value=s.total_units||'';
+  document.getElementById('sPrice').value=s.unit_price||'';
+  document.getElementById('sPaid').value=s.total_paid||'';
+  document.getElementById('sNotes').value=s.notes||'';
+  openModal('studentModal');
+}
+async function saveStudent(){
+  var id=document.getElementById('editStudentId').value;
+  var data={
+    team_code:teamCode,
+    name:document.getElementById('sName').value.trim(),
+    parent_name:document.getElementById('sParent').value.trim(),
+    parent_phone:document.getElementById('sPhone').value.trim(),
+    mode:document.getElementById('sMode').value,
+    total_units:parseInt(document.getElementById('sTotal').value)||0,
+    used_units:id?undefined:0,
+    unit_price:parseFloat(document.getElementById('sPrice').value)||0,
+    total_paid:parseFloat(document.getElementById('sPaid').value)||0,
+    notes:document.getElementById('sNotes').value.trim(),
+    status:'active'
+  };
+  if(!data.name){showToast('请输入学员姓名');return}
+  if(!data.total_units){showToast('请输入课程数量');return}
+  
+  if(id){
+    var resp=await sb.from('students').update(data).eq('id',id);
+    if(resp.error){showToast('保存失败');return}
+  }else{
+    var resp=await sb.from('students').insert(data);
+    if(resp.error){showToast('添加失败');return}
+  }
+  closeModal('studentModal');
+  loadStudents();
+  showToast(id?'已更新':'已添加');
+}
+
+// ===== ATTENDANCE / CHECK-IN =====
+function showCheckinModal(){
+  var sel=document.getElementById('checkinStudent');
+  sel.innerHTML='<option value="">请选择</option>';
+  students.filter(function(s){return s.status==='active'}).forEach(function(s){
+    sel.innerHTML+='<option value="'+s.id+'">'+escHtml(s.name)+'（剩余'+(s.total_units-s.used_units)+(s.mode==='hours'?'课时':'次')+'）</option>';
+  });
+  document.getElementById('checkinDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('checkinUnits').value='1';
+  document.getElementById('checkinNotes').value='';
+  openModal('checkinModal');
+}
+function quickCheckin(id){
+  document.getElementById('checkinStudent').value=id;
+  showCheckinModal();
+}
+async function doCheckin(){
+  var sid=document.getElementById('checkinStudent').value;
+  var units=parseInt(document.getElementById('checkinUnits').value)||1;
+  var date=document.getElementById('checkinDate').value||new Date().toISOString().slice(0,10);
+  var notes=document.getElementById('checkinNotes').value.trim();
+  if(!sid){showToast('请选择学员');return}
+  
+  var s=students.find(function(x){return x.id===sid});
+  if(!s) return;
+  if(s.total_units-s.used_units<units){showToast('❌ 剩余课时不足');return}
+  
+  // Insert attendance record
+  var ar=await sb.from('attendance').insert({
+    team_code:teamCode,
+    student_id:sid,
+    class_date:date,
+    units_deducted:units,
+    coach_name:notes||'签到',
+    notes:notes
+  });
+  if(ar.error){showToast('签到失败');console.error(ar.error);return}
+  
+  // Update student used_units
+  var ur=await sb.from('students').update({used_units:s.used_units+units}).eq('id',sid);
+  if(ur.error){showToast('更新失败');return}
+  
+  closeModal('checkinModal');
+  loadStudents();
+  loadTodayAttendance();
+  showToast('✅ 签到成功！'+escHtml(s.name)+' -'+units+(s.mode==='hours'?'课时':'次'));
+}
+
+// ===== TODAY ATTENDANCE =====
+async function loadTodayAttendance(){
+  if(!sb||!sbOk||!teamCode) return;
+  var today=new Date().toISOString().slice(0,10);
+  var q=sb.from('attendance').select('*,student:students(name)').eq('class_date',today).order('created_at',{ascending:false});
+  if(!isAdmin) q=q.eq('team_code',teamCode);
+  var resp=await q;
+  if(!resp.error) todayAttendance=resp.data||[];
+  renderToday();
+}
+function renderToday(){
+  var el=document.getElementById('todayList');
+  if(!todayAttendance.length){el.innerHTML='<div class="empty">今日暂无签到</div>';return}
+  var html='';
+  todayAttendance.forEach(function(a){
+    var name=a.student?a.student.name:'未知';
+    html+='<div class="history-item"><span class="date">'+a.class_date+'</span><span>'+escHtml(name)+' -'+a.units_deducted+'节</span></div>';
+  });
+  el.innerHTML=html;
+}
+
+// ===== HISTORY =====
+async function renderHistory(){
+  if(!sb||!sbOk||!teamCode) return;
+  var date=document.getElementById('historySearch').value;
+  var q=sb.from('attendance').select('*,student:students(name)').order('created_at',{ascending:false}).limit(50);
+  if(!isAdmin) q=q.eq('team_code',teamCode);
+  if(date) q=q.eq('class_date',date);
+  var resp=await q;
+  var el=document.getElementById('historyList');
+  if(resp.error||!resp.data||!resp.data.length){el.innerHTML='<div class="empty">暂无记录</div>';return}
+  var html='';
+  resp.data.forEach(function(a){
+    html+='<div class="history-item"><span class="date">'+a.class_date+'</span><span>'+escHtml(a.student?a.student.name:'未知')+' <span style="color:var(--red)">-'+a.units_deducted+'节</span> '+(a.notes||'')+'</span></div>';
+  });
+  el.innerHTML=html;
+}
+
+// ===== STATS =====
+function renderStats(){
+  var total=students.filter(function(s){return s.status==='active'}).length;
+  var low=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=3&&(s.total_units-s.used_units)>0}).length;
+  var zero=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=0}).length;
+  var today=todayAttendance.length;
+  document.getElementById('statsRow').innerHTML=
+    '<div class="stat-card"><div class="num">'+total+'</div><div class="lbl">在读学员</div></div>'+
+    '<div class="stat-card"><div class="num">'+today+'</div><div class="lbl">今日签到</div></div>'+
+    '<div class="stat-card"><div class="num warn">'+low+'</div><div class="lbl">课时不足</div></div>'+
+    '<div class="stat-card"><div class="num danger">'+zero+'</div><div class="lbl">已用完</div></div>';
+}
+
+// ===== PAYMENTS =====
+async function loadPayments(){
+  if(!sb||!sbOk||!teamCode) return;
+  var q=sb.from('payments').select('*,student:students(name)').order('payment_date',{ascending:false}).limit(50);
+  if(!isAdmin) q=q.eq('team_code',teamCode);
+  var resp=await q;
+  if(!resp.error) payments=resp.data||[];
+  renderPayments();
+}
+function renderPayments(){
+  var el=document.getElementById('paymentList');
+  if(!payments.length){el.innerHTML='<div class="empty">暂无缴费记录</div>';return}
+  var html='';
+  payments.forEach(function(p){
+    html+='<div class="history-item"><span class="date">'+p.payment_date+'</span><span>'+escHtml(p.student?p.student.name:'未知')+' <b style="color:var(--green)">+¥'+(p.amount||0)+'</b> '+p.payment_method+'</span></div>';
+  });
+  el.innerHTML=html;
+}
+
+function showPaymentModal(){
+  var sel=document.getElementById('payStudent');
+  sel.innerHTML='<option value="">请选择</option>';
+  students.forEach(function(s){
+    sel.innerHTML+='<option value="'+s.id+'">'+escHtml(s.name)+'</option>';
+  });
+  document.getElementById('payAmount').value='';
+  document.getElementById('payUnits').value='';
+  document.getElementById('payDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('payMethod').value='微信';
+  document.getElementById('payNotes').value='';
+  openModal('paymentModal');
+}
+async function savePayment(){
+  var sid=document.getElementById('payStudent').value;
+  var amount=parseFloat(document.getElementById('payAmount').value)||0;
+  var units=parseInt(document.getElementById('payUnits').value)||0;
+  var date=document.getElementById('payDate').value;
+  var method=document.getElementById('payMethod').value;
+  var notes=document.getElementById('payNotes').value.trim();
+  if(!sid||!amount){showToast('请选择学员并填写金额');return}
+  
+  var resp=await sb.from('payments').insert({
+    team_code:teamCode,student_id:sid,amount:amount,payment_date:date,
+    payment_method:method,units_purchased:units,notes:notes
+  });
+  if(resp.error){showToast('保存失败');return}
+  
+  // Auto-update student total_units if units provided
+  if(units>0){
+    var s=students.find(function(x){return x.id===sid});
+    if(s){
+      var newTotal=parseInt(s.total_units||0)+units;
+      await sb.from('students').update({total_units:newTotal,total_paid:(parseFloat(s.total_paid||0)+amount)}).eq('id',sid);
+    }
+  }
+  
+  closeModal('paymentModal');
+  loadStudents();
+  loadPayments();
+  showToast('💰 缴费记录已保存');
+}
+
+// ===== INIT =====
+initFromLocal();
+if(teamCode) showMain();
+
+// ===== FLOATING ACTION BUTTON =====
+(function addFab(){
+  var fab=document.createElement('button');
+  fab.className='float-btn';fab.textContent='+';
+  fab.title='添加学员';
+  fab.onclick=function(){isAdmin?showAddStudent():promptAdminLogin()};
+  document.body.appendChild(fab);
+})();
+</script>
+</body>
+</html>
