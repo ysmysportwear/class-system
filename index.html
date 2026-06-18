@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -133,7 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 
 .hidden{display:none!important}
 .loading,.empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
-#loginScreen{text-align:center;padding:50px 0}
+
 #loginScreen .ico{font-size:56px;margin-bottom:8px}
 #loginScreen h2{font-size:18px;margin-bottom:4px}
 #loginScreen p{font-size:12px;color:var(--t3);margin-bottom:16px}
@@ -147,7 +147,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <body>
 
 <div class="page" id="app">
-  <div class="hdr"><h1>🛼 轮滑俱乐部课消系统</h1><p>Professional Edition</p></div>
+  <div class="hdr"><h1>🛼 轮滑俱乐部课消系统</h1><p>Professional Edition</p><div class="club-name" id="clubName"><span>🏆 </span><span id="clubNameText"></span></div></div>
   
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span>
@@ -158,14 +158,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <button class="bts" onclick="logoutTeam()">切换</button>
   </div>
 
-  <!-- Login -->
-  <div id="loginScreen">
-    <div class="ico">🔐</div>
-    <h2>请输入团队码</h2>
-    <p>由教练提供，关联您的团队数据</p>
-    <input id="tcInput" placeholder="例: TEAM001">
-    <div class="btns"><button onclick="joinTeam()">加入团队</button></div>
-    <div class="adm"><span onclick="showAdminLogin()">🔑 管理员登录</span></div>
+  <!-- LANDING PAGE -->
+  <div class="landing" id="landingPage">
+    <div class="particles">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="skate-icon">🛼</div>
+    <div class="landing-title">轮滑俱乐部</div>
+    <div class="landing-sub">CLASS CONSUMPTION SYSTEM</div>
+    <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
+  </div>
+  <!-- Team code modal -->
+  <div class="landing-modal" id="landingModal">
+    <div class="box">
+      <h3>🔐 团队验证</h3>
+      <p>请输入您的俱乐部团队码</p>
+      <input id="tcInput" placeholder="例: TEAM001" autocomplete="off">
+      <button onclick="joinTeam()">加入团队</button>
+      <div style="margin-top:12px;font-size:11px;color:var(--t3)">
+        <span style="cursor:pointer;text-decoration:underline" onclick="showAdminLogin();closeLandingModal()">🔑 管理员登录</span>
+      </div>
+    </div>
   </div>
 
   <!-- Main -->
@@ -313,29 +330,46 @@ function openM(id){document.getElementById(id).classList.add('show')}
 async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
 
 // ===== AUTH =====
+function openLandingModal(){document.getElementById('landingModal').classList.add('show');setTimeout(function(){document.getElementById('tcInput').focus()},300)}
+function closeLandingModal(){document.getElementById('landingModal').classList.remove('show')}
 function init(){
   tc=localStorage.getItem('cc_tc')||'';
   role=localStorage.getItem('cc_r')||'';
   isAdm=role==='boss';
-  if(tc){enter()}
+  if(tc){
+    document.getElementById('landingPage').classList.add('out');
+    setTimeout(function(){document.getElementById('landingPage').style.display='none'},800);
+    enter();
+  }
 }
-function joinTeam(){
+async function joinTeam(){
   var c=document.getElementById('tcInput').value.trim().toUpperCase();
   if(!c){ts('请输入团队码');return}
   tc=c;role='';isAdm=false;
   localStorage.setItem('cc_tc',tc);localStorage.removeItem('cc_r');
-  enter();
+  closeLandingModal();
+  // Fetch club profile
+  if(sb&&sbOk){
+    var r=await sb.from('team_profiles').select('coach_name').eq('team_code',tc).maybeSingle();
+    if(r.data&&r.data.coach_name){
+      document.getElementById('clubNameText').textContent=r.data.coach_name;
+      document.getElementById('clubName').classList.add('show');
+    }
+  }
+  document.getElementById('landingPage').classList.add('out');
+  setTimeout(function(){document.getElementById('landingPage').style.display='none';enter()},600);
 }
 function logoutTeam(){
   tc='';role='';isAdm=false;
   localStorage.removeItem('cc_tc');localStorage.removeItem('cc_r');
-  document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('main').classList.add('hidden');
   document.getElementById('fabBtn').classList.add('hidden');
   document.getElementById('tmDisp').textContent='未加入';
+  document.getElementById('clubName').classList.remove('show');
+  document.getElementById('landingPage').style.display='flex';
+  document.getElementById('landingPage').classList.remove('out');
 }
 function enter(){
-  document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('main').classList.remove('hidden');
   document.getElementById('fabBtn').classList.remove('hidden');
   document.getElementById('tmDisp').textContent=isAdm?'ALL TEAMS':tc;
