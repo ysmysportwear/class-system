@@ -144,7 +144,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <button class="login-opt coach-btn" onclick="showSub('coach')"><span class="lo-icon">👨‍🏫</span><span class="lo-text">教练入口</span><span class="lo-desc">团队码登录 · 管理学员课消</span></button>
     <div class="admin-login-link" onclick="showSub('admin')">🔑 校长登录</div>
   </div>
-  <div class="box hidden" id="sub-parent" style="max-width:360px"><h3>📱 家长注册/登录</h3><input id="parentPhone" type="tel" placeholder="手机号" maxlength="11" inputmode="numeric"><div id="parentExtra"><input id="parentTC" placeholder="教练团队码" style="margin-top:8px;text-transform:uppercase"><input id="childName" placeholder="孩子姓名" style="margin-top:8px"><div style="display:flex;gap:8px;margin-top:8px"><select id="childSex" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none;background:#fff"><option>男</option><option>女</option></select><input id="childAge" type="number" placeholder="年龄" min="3" max="18" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none"></div><div style="margin-top:8px;font-size:11px;color:#999">孩子照片（可选）</div><input id="childPhoto" type="file" accept="image/*" style="margin-top:4px;font-size:12px"><img id="childPhotoPreview" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:8px auto"></div><button class="btn-green" id="parentBtn" onclick="parentLogin()">注册 / 登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
+  <div class="box hidden" id="sub-parent"><h3>📱 家长登录</h3><p>请输入手机号，首次自动注册</p><input id="parentPhone" type="tel" placeholder="输入11位手机号" maxlength="11" inputmode="numeric"><button class="btn-green" onclick="parentLogin()">登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
   <div class="box hidden" id="sub-coach"><h3>👨‍🏫 教练登录</h3><p>请输入俱乐部团队码</p><input id="tcInput" placeholder="例: TEAM001"><button class="btn-green" onclick="joinTeam()">进入系统</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
   <div class="box hidden" id="sub-admin"><h3>🔑 校长登录</h3><p>请输入管理密码</p><input id="admPw" type="password" placeholder="密码"><button class="btn-green" onclick="doAdminLogin()">登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
 </div>
@@ -153,7 +153,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div class="hdr"><h1>轮滑俱乐部课消系统</h1><p>Professional Edition</p></div>
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span><span class="code" id="tmDisp">未加入</span>
-    <span class="role-tag c" id="rC">教练</span><span class="role-tag c" id="rP" style="display:none">家长</span><span class="role-tag b" id="rB">校长</span>
+    <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span>
     <button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
     <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
@@ -235,32 +235,7 @@ function openM(id){document.getElementById(id).classList.add('show')}
 async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
 function hideBoxes(){['landingBox','sub-parent','sub-coach','sub-admin'].forEach(function(id){document.getElementById(id).classList.add('hidden')})}
 function showMain(){hideBoxes();document.getElementById('landingBox').classList.remove('hidden')}
-
-var _phTimer=null;
-function setupParentInput(){
-  var el=document.getElementById('parentPhone');
-  if(!el||el._bound)return;
-  el._bound=true;
-  el.oninput=function(){
-    clearTimeout(_phTimer);
-    var ph=this.value.trim().replace(/[^0-9]/g,'');
-    if(ph.length!==11)return;
-    _phTimer=setTimeout(async function(){
-      if(!sb||!sbOk)return;
-      var r=await sb.from('parent_users').select('child_name').eq('phone',ph).maybeSingle();
-      var extra=document.getElementById('parentExtra');
-      var btn=document.getElementById('parentBtn');
-      if(r.data&&r.data.child_name){
-        extra.style.display='none';
-        btn.textContent='��¼';
-      }else{
-        extra.style.display='block';
-        btn.textContent='ע��';
-      }
-    },600);
-  };
-}
-function showSub(type){hideBoxes();document.getElementById('sub-'+type).classList.remove('hidden');if(type==='parent'){setupParentInput()}setTimeout(function(){var el=document.getElementById(type==='parent'?'parentPhone':type==='coach'?'tcInput':'admPw');if(el)el.focus()},200)}
+function showSub(type){hideBoxes();document.getElementById('sub-'+type).classList.remove('hidden');setTimeout(function(){var el=document.getElementById(type==='parent'?'parentPhone':type==='coach'?'tcInput':'admPw');if(el)el.focus()},200)}
 function openModal(){document.getElementById('landingModal').classList.add('show');showMain()}
 
 // Auth
@@ -334,33 +309,18 @@ async function loadAttendance(){var q=sb.from('attendance').select('*').order('c
 async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
 
 // Coach
-async function viewCoachParents(code){
-  if(!sb||!sbOk)return;
-  var r=await sb.from('parent_users').select('*').eq('team_code',code).order('created_at',{ascending:false});
-  var list='';
-  if(r.data&&r.data.length){
-    r.data.forEach(function(p){
-      list+='<div style=padding:6px 8px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between>';
-      list+='<span><b>'+eh(p.child_name||'?')+'</b> ('+eh(p.child_sex||'')+' '+p.child_age+'y) - '+eh(p.phone||'')+'</span></div>';
-    });
-  }else{list='<div class=empty>No parents</div>'}
-  ts('Coach '+code+' has '+((r.data||[]).length)+' parents');
-  alert('Coach: '+code+'\nParents:\n'+(r.data||[]).map(function(p){return '- '+p.child_name+' ('+p.phone+')'}).join('\n'));
-}
-
 async function showCoachManager(){loadCoachList();openM('coachModal')}
 async function loadCoachList(){
   if(!sb||!sbOk) return;
-  var r=await sb.from('team_profiles').select('*').eq('system','class').order('team_code');
+  var r=await sb.from('team_profiles').select('*').order('team_code');
   var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid');
-  var pr=await sb.from('parent_users').select('team_code');
-  var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0,par:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});if(pr.data)pr.data.forEach(function(p){var k=p.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0,par:0};stats[k].par++});
+  var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});
   var el=document.getElementById('coachList');
   if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无教练</div>';return}
   var h='';
   r.data.forEach(function(c){if(c.team_code==='__ADMIN__')return;var st=stats[c.team_code]||{s:0,u:0,p:0};
     h+='<div style=padding:8px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px>';
-    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+'<span style=cursor:pointer onclick=viewCoachParents("'+c.team_code+'")><b>'+eh(c.coach_name||'Coach')+'</b> '+eh(c.team_code)+'</span>';
+    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+'<span style=cursor:pointer onclick=viewCoachParents("+c.team_code+")><b>'+eh(c.coach_name||'Coach')+'</b></span> '+eh(c.team_code)+'</span>';
     h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteCoach("'+c.team_code+'")>X</span></div>';
     h+='<div style=display:flex;gap:12px;color:var(--t3);font-size:10px><span>学员:'+st.s+'</span><span>消课:'+st.u+'</span><span>收费:'+st.p+'</span></div></div>';
   });el.innerHTML=h||'<div class=empty>暂无教练</div>';
@@ -373,17 +333,17 @@ async function generateCoachCode(){
   var r=await sb.from('team_profiles').select('team_code').like('team_code',campus+'%').order('team_code',{ascending:false}).limit(1);
   var nextNum=1;if(r.data&&r.data[0]&&r.data[0].team_code.length===6)nextNum=(parseInt(r.data[0].team_code.slice(2))||0)+1;
   var code=campus+String(nextNum).padStart(4,'0');
-  var ir=await sb.from('team_profiles').upsert({team_code:code,coach_name:name,system:'class'},{onConflict:'team_code'});
+  var ir=await sb.from('team_profiles').upsert({team_code:code,coach_name:name},{onConflict:'team_code'});
   if(ir.error){ts('生成失败');return}document.getElementById('cmName').value='';loadCoachList();loadCoachOptions();ts('教练码: '+code);
 }
 async function deleteCoach(code){
   if(!confirm('确认删除教练 '+code+'？该教练的学生将取消关联。'))return;
-  await sb.from('team_profiles').delete().eq('team_code',code).eq('system','class');
+  await sb.from('team_profiles').delete().eq('team_code',code);
   loadCoachList();loadCoachOptions();ts('已删除: '+code);
 }
 async function loadCoachOptions(){
   if(!sb||!sbOk) return;
-  var r=await sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code');
+  var r=await sb.from('team_profiles').select('team_code,coach_name').order('team_code');
   var sel=document.getElementById('sfCoach');if(!sel)return;
   sel.innerHTML='<option value="">选择教练码</option>';
   if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'});
@@ -392,7 +352,7 @@ function updateCoachFilter(){
   var sel=document.getElementById('coachFilter');if(!sel)return;
   sel.innerHTML='<option value="all">全部教练</option>';
   if(!sb||!sbOk)return;
-  sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'})});
+  sb.from('team_profiles').select('team_code,coach_name').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'})});
 }
 
 // Students
@@ -469,87 +429,16 @@ async function savePayment(){var sid=document.getElementById('payStudent').value
 // Reports
 function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
 
-document.getElementById("childPhoto").onchange=function(e){var f=e.target.files[0];if(f){var r=new FileReader();r.onload=function(ev){var i=document.getElementById("childPhotoPreview");i.src=ev.target.result;i.style.display="block"};r.readAsDataURL(f)}};
-
-var _phEl=document.getElementById('parentPhone');
-_phEl.onblur=async function(){
-  var ph=this.value.trim().replace(/[^0-9]/g,'');
-  if(ph.length!==11)return;
-  if(!sb||!sbOk)return;
-  var r=await sb.from('parent_users').select('child_name').eq('phone',ph).maybeSingle();
-  var extra=document.getElementById('parentExtra');
-  var btn=document.getElementById('parentBtn');
-  if(r.data&&r.data.child_name){
-    extra.style.display='none';
-    btn.textContent='登录';
-  }else{
-    extra.style.display='block';
-    btn.textContent='注册';
-  }
-};
-
 init();
 
-function enterParent(){
-  document.getElementById('landingPage').classList.add('out');
-  document.getElementById('appMain').classList.remove('hidden');
-  document.getElementById('fabBtn').classList.add('hidden');
-  document.getElementById('tmDisp').textContent='家长';
-  document.getElementById('rP').style.display='inline';
-  document.getElementById('rC').style.display='none';
-  document.getElementById('rB').style.display='none';
-  document.getElementById('btnCM').style.display='none';
-  document.getElementById('btnCP').style.display='none';
-  document.getElementById('topTabs').innerHTML='<button class=on onclick=switchTabParent("att")>课表</button><button onclick=switchTabParent("pay")>收费</button>';
-  document.getElementById('tab-cal').classList.add('hidden');
-  document.getElementById('tab-stu').classList.add('hidden');
-  document.getElementById('tab-rpt').classList.add('hidden');
-  document.getElementById('tab-pay').classList.add('hidden');
-  switchTabParent('att');
-}
-function switchTabParent(t){
-  document.getElementById('tab-cal').classList.toggle('hidden',t!=='att');
-  document.getElementById('tab-pay').classList.toggle('hidden',t!=='pay');
-  document.querySelectorAll('#topTabs button').forEach(function(b,i){b.classList.toggle('on',(t==='att'&&i===0)||(t==='pay'&&i===1))});
-  if(t==='att') renderParentAttendance();
-  if(t==='pay') renderParentPayments();
-}
-async function renderParentAttendance(){
-  var phone=localStorage.getItem('cls_phone')||'';
-  var r=await sb.from('parent_users').select('*').eq('phone',phone).maybeSingle();
-  if(!r.data)return;
-  var p=r.data;tc=p.team_code||'';
-  var sr=await sb.from('students').select('*').eq('team_code',tc).ilike('name','%'+p.child_name+'%');
-  var child=sr.data&&sr.data.length?sr.data[0]:null;
-  var h='<div style=text-align:center;padding:12px>';
-  if(p.child_photo)h+='<img src='+p.child_photo+' style=width:64px;height:64px;border-radius:50%;object-fit:cover>';
-  h+='<div style=font-size:16px;font-weight:700;margin-top:6px>'+eh(p.child_name||'')+'</div>';
-  h+='<div style=font-size:11px;color:var(--t3)>剩余课时: '+(child?child.total_units-child.used_units:0)+'</div></div>';
-  document.getElementById('tab-cal').innerHTML=h;
-  if(child){
-    var ar=await sb.from('attendance').select('*').eq('student_id',child.id).order('class_date',{ascending:false}).limit(30);
-    if(ar.data&&ar.data.length){
-      h+='<div class=card style=margin-top:8px><h3>课消记录</h3>';
-      ar.data.forEach(function(a){h+='<div class=hist-item><div class=info><div class=n>'+a.class_date+'</div><div class=m>'+eh(a.notes||'')+'</div></div><div class=delta down>-'+a.units_deducted+'</div></div>'});
-      h+='</div>';
-      document.getElementById('tab-cal').innerHTML+=h;
-    }
-  }
-  document.getElementById('tab-cal').classList.remove('hidden');
-}
-async function renderParentPayments(){
-  var phone=localStorage.getItem('cls_phone')||'';
-  var r=await sb.from('parent_users').select('*').eq('phone',phone).maybeSingle();
-  if(!r.data)return;
-  tc=r.data.team_code||'';
-  var pr=await sb.from('payments').select('*').eq('team_code',tc).order('payment_date',{ascending:false}).limit(50);
-  var h='<div class=card><h3>充值记录</h3>';
-  if(pr.data&&pr.data.length){
-    pr.data.forEach(function(pay){h+='<div class=hist-item><div class=info><div class=n>'+pay.payment_date+'</div><div class=m>'+eh(pay.payment_method||'')+(pay.units_purchased?' +'+pay.units_purchased+'节':'')+'</div></div><div class=delta up>+'+fm(pay.amount||0)+'</div></div>'});
-  }else{h+='<div class=empty>暂无记录</div>'}
-  h+='</div>';
-  document.getElementById('tab-pay').innerHTML=h;
-  document.getElementById('tab-pay').classList.remove('hidden');
+async function viewCoachParents(code){
+  if(!sb||!sbOk)return;
+  var r=await sb.from('parent_users').select('*').eq('team_code',code).order('created_at',{ascending:false});
+  var msg='Coach: '+code+'\n\nParents:\n';
+  if(r.data&&r.data.length){
+    r.data.forEach(function(p,i){msg+=(i+1)+'. '+p.child_name+' '+p.phone+'\n'});
+  }else{msg+='(none)'}
+  alert(msg);
 }
 </script>
 </body>
