@@ -441,20 +441,28 @@ function enterParent(){
   document.getElementById('rB').style.display='none';
   document.getElementById('btnCM').style.display='none';
   document.getElementById('btnCP').style.display='none';
-  document.getElementById('topTabs').innerHTML='<button class=on>My Child</button><button onclick=switchTabParent("pay")>Payment</button>';
+  document.getElementById('topTabs').innerHTML='<button class=on onclick=switchTabParent("att")>Attendance</button><button onclick=switchTabParent("pay")>Payment</button>';
   document.getElementById('tab-cal').classList.add('hidden');
   document.getElementById('tab-stu').classList.add('hidden');
   document.getElementById('tab-rpt').classList.add('hidden');
   renderParentDashboard();
 }
 function switchTabParent(t){
+  document.getElementById('tab-dash').classList.toggle('hidden',t!=='att');
+  document.getElementById('tab-cal').classList.toggle('hidden',t==='att');
+  document.getElementById('tab-pay').classList.toggle('hidden',t==='pay');
+  document.querySelectorAll('#topTabs button').forEach(function(b,i){b.classList.toggle('on',(t==='att'&&i===0)||(t==='pay'&&i===1))});
+  if(t==='att') renderParentAttendance();
+  if(t==='pay') renderParentPayments();
+}
+// OLD switchTabParent replaced
   document.getElementById('tab-dash').classList.toggle('hidden',t!=='dash');
   document.getElementById('tab-pay').classList.toggle('hidden',t==='dash');
   document.querySelectorAll('#topTabs button').forEach(function(b,i){b.classList.toggle('on',(t==='dash'&&i===0)||(t==='pay'&&i===1))});
   if(t==='dash') renderParentDashboard();
   if(t==='pay') renderParentPayments();
 }
-async function renderParentDashboard(){
+async function renderParentAttendance(){
   var phone=localStorage.getItem('cls_phone')||'';
   var r=await sb.from('parent_users').select('*').eq('phone',phone).maybeSingle();
   if(!r.data)return;
@@ -471,8 +479,7 @@ async function renderParentDashboard(){
   h+='<div style=display:flex;gap:12px;justify-content:center;margin-top:16px>';
   h+='<div style=text-align:center><div style=font-size:32px;font-weight:800;color:'+(rem<=3?'var(--o)':rem<=0?'var(--r)':'var(--g)')+'>'+rem+'</div><div style=font-size:11px;color:var(--t3)>Remaining</div></div>';
   h+='<div style=text-align:center><div style=font-size:32px;font-weight:800;color:var(--b)>'+total+'</div><div style=font-size:11px;color:var(--t3)>Total</div></div></div></div>';
-  document.getElementById('tab-dash').innerHTML=h;
-  document.getElementById('tab-pay').classList.add('hidden');
+  document.getElementById('tab-cal').innerHTML=h;
   if(child){
     var ar=await sb.from('attendance').select('*').eq('student_id',child.id).order('class_date',{ascending:false}).limit(20);
     if(ar.data&&ar.data.length){
