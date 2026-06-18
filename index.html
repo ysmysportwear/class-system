@@ -548,6 +548,16 @@ async function addSchedule(){
 }
 async function deleteSchedule(id){if(!confirm('Delete?'))return;await sb.from('class_schedule').delete().eq('id',id);loadSchedules()}
 function showSchedManager(){loadSchedules();loadCoachSelect();openM('schedModal')}
+function showTodaySched(){
+  var today=new Date().getDay();
+  var td=schedules.filter(function(s){return s.day_of_week===today});
+  var el=document.getElementById('todaySched'),tsp=document.getElementById('tsp');
+  if(!el||!tsp)return;
+  if(!td.length){el.style.display='none';return}
+  el.style.display='block';var h='';
+  td.forEach(function(s){var cnt=window._elist&&window._elist[s.id]?window._elist[s.id].length:0;h+='<div style=padding:6px 0;border-bottom:1px solid var(--bdr);font-size:12px><b>'+eh(s.class_name)+'</b> '+s.time_start+'-'+s.time_end+' <span style=color:var(--t2)>('+cnt+'人)</span></div>'});
+  tsp.innerHTML=h||'<div class=empty>今日无课程</div>';
+}
 function loadCoachSelect(){if(!sb||!sbOk)return;var sel=document.getElementById('smCoach');if(!sel)return;sel.innerHTML='<option value="">选择教练</option>';sb.from('team_profiles').select('team_code,coach_name').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+c.team_code+' '+eh(c.coach_name||'')+'</option>'})})}
 function loadSchedDisplay(){
   if(!schedules.length)return;
