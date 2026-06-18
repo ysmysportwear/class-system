@@ -6,7 +6,7 @@
 <title>轮滑俱乐部课消系统 Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true"></script>
 <style>
-:root{--bg:#f2f3f5;--card:#fff;--t1:#1a1a1a;--t2:#666;--t3:#aaa;--bdr:#e8e8e3;--g:#0F6E56;--gb:#E0F3EC;--b:#3872E0;--bb:#E6F0FC;--r:#E24B4A;--rb:#FCEBEB;--o:#E6950B;--ob:#FFF4E0;--p:#7B61FF;--s:0 1px 3px rgba(0,0,0,.06);--rds:14px}
+:root{--bg:#f2f3f5;--card:#fff;--t1:#1a1a1a;--t2:#666;--t3:#aaa;--bdr:#e8e8e3;--g:#0F6E56;--gb:#E0F3EC;--b:#3872E0;--bb:#E6F0FC;--r:#E24B4A;--rb:#FCEBEB;--o:#E6950B;--ob:#FFF4E0;--p:#7B61FF;--pb:#EDE8FF;--s:0 1px 3px rgba(0,0,0,.06);--rds:14px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;min-height:100vh;-webkit-tap-highlight-color:transparent}
 
@@ -49,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 .tm-bar .role-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;display:none}
 .tm-bar .role-tag.on{display:inline}
 .tm-bar .role-tag.c{background:var(--bb);color:var(--b)}
-.tm-bar .role-tag.b{background:var(--pb);color:var(--p)}
+.tm-bar .role-tag.b{background:var(--pb);color:var(--p)}.tm-bar .role-tag.p{background:var(--pb);color:var(--p)}
 .tm-bar .bts{font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--bg);cursor:pointer;color:var(--t2)}
 
 .card{background:var(--card);border-radius:var(--rds);padding:12px;margin-bottom:8px;box-shadow:var(--s)}
@@ -153,9 +153,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div class="hdr"><h1>轮滑俱乐部课消系统</h1><p>Professional Edition</p></div>
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span><span class="code" id="tmDisp">未加入</span>
-    <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span>
+    <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span><span class="role-tag p" id="rP">家长</span>
     <button class="bts" onclick="showSchedManager()" id="btnSched" style="display:none">课程管理</button><button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
-    <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button>
+    <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button><button class="bts" onclick="changeParentPw()" id="btnChPw" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
   </div>
 
@@ -298,12 +298,27 @@ async function changeAdminPw(){
   var ur=await sb.from('team_profiles').upsert({team_code:'__ADMIN__',admin_password_hash:newHash},{onConflict:'team_code'});
   if(ur.error){ts('保存失败');return}ts('密码已更新')
 }
+
+async function changeParentPw(){
+  var old=prompt('当前密码：');if(!old)return;
+  var oldHash=await s256(old);
+  var ph=localStorage.getItem("cls_phone")||"";
+  var r=await sb.from("parent_users").select("*").eq("phone",ph).maybeSingle();
+  if(!r.data){ts("未找到用户");return}
+  var stored=r.data.password_hash||"";
+  if(oldHash!==stored){ts("当前密码错误");return}
+  var n1=prompt("新密码：");if(!n1)return;
+  var n2=prompt("确认新密码：");if(!n2||n1!==n2){ts("两次输入不一致");return}
+  var newHash=await s256(n1);
+  var ur=await sb.from("parent_users").update({password_hash:newHash}).eq("phone",ph);
+  if(ur.error){ts("保存失败");return}ts("密码已更新")
+}
 function logoutTeam(){tc='';isAdm=false;localStorage.removeItem('cls_tc');localStorage.removeItem('cls_r');document.getElementById('appMain').classList.add('hidden');document.getElementById('fabBtn').classList.add('hidden');document.getElementById('tmDisp').textContent='未加入';document.getElementById('landingPage').classList.remove('out')}
 function enterAnimated(){document.getElementById('landingPage').classList.add('out');enter()}
 function enter(){
   document.getElementById('appMain').classList.remove('hidden');document.getElementById('fabBtn').classList.remove('hidden');
   document.getElementById('tmDisp').textContent=isAdm?'ALL':tc;
-  document.getElementById('rC').classList.toggle('on',!isAdm);document.getElementById('rB').classList.toggle('on',isAdm);
+  document.getElementById('rC').classList.toggle('on',!isAdm);document.getElementById('rB').classList.toggle('on',isAdm);document.getElementById('rP').style.display='none';document.getElementById('btnChPw').style.display='none';
   document.getElementById('btnSched').style.display=isAdm?'inline':'none';document.getElementById('btnCM').style.display=isAdm?'inline':'none';
   document.getElementById('btnCP').style.display=isAdm?'inline':'none';
   loadAll();
@@ -554,7 +569,7 @@ function showStuDetail(id){
 }
 function enterParent(){
   document.getElementById("landingPage").classList.add("out");
-  document.getElementById("app").classList.remove("hidden");document.getElementById("fabBtn").classList.add("hidden");
+  document.getElementById("appMain").classList.remove("hidden");document.getElementById("fabBtn").classList.add("hidden");
   document.getElementById("tmDisp").textContent="Parent";document.getElementById("rP").style.display="inline";
   document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
   document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";
