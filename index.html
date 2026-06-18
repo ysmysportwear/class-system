@@ -338,7 +338,7 @@ async function generateCoachCode(){
 }
 async function deleteCoach(code){
   if(!confirm('确认删除教练 '+code+'？该教练的学生将取消关联。'))return;
-  await sb.from('team_profiles').delete().eq('team_code',code);
+  await sb.from('team_profiles').delete().eq('team_code',code).eq('system','class');
   loadCoachList();loadCoachOptions();ts('已删除: '+code);
 }
 async function loadCoachOptions(){
@@ -352,7 +352,7 @@ function updateCoachFilter(){
   var sel=document.getElementById('coachFilter');if(!sel)return;
   sel.innerHTML='<option value="all">全部教练</option>';
   if(!sb||!sbOk)return;
-  sb.from('team_profiles').select('team_code,coach_name').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'})});
+  sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'})});
 }
 
 // Students
