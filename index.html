@@ -721,8 +721,10 @@ async function deleteMilestone(id){if(!confirm('删除此里程碑？'))return;a
 async function loadCourseOptions(){
   if(!courses.length&&sb&&sbOk){await loadCourses();}
   var sel=document.getElementById('sfPkg');if(!sel)return;
-  sel.innerHTML='<option value="custom">自定义</option>';
-  courses.forEach(function(c){sel.innerHTML+='<option value="'+c.id+'">'+eh(c.name)+' ('+c.total_sessions+'课时)</option>'});
+  var prev=sel.value;
+  sel.innerHTML='<option value=\"custom\">自定义</option>';
+  courses.forEach(function(c){sel.innerHTML+='<option value=\"'+c.id+'\">'+eh(c.name)+' ('+c.total_sessions+'课时)</option>'});
+  if(prev&&prev!=='custom'){var exists=courses.find(function(x){return x.id===prev});if(exists)sel.value=prev;}
   sel.onchange=function(){
     var cid=sel.value;document.getElementById('sfCourse').value=cid;
     if(cid!=='custom'){
@@ -731,7 +733,6 @@ async function loadCourseOptions(){
     }
   };
 }
-
 // ====== STUDENT PROGRESS VIEW ======
 function showStudentProgress(sid){
   var s=students.find(function(x){return x.id===sid});if(!s)return;
