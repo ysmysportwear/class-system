@@ -13,7 +13,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 /* ── LANDING PAGE ── */
 .landing{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a1628,#0d2b1f 30%,#0F6E56 60%,#0a3d2e);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
 .landing.out{display:none!important}
-.landing .skate-icon{font-size:120px;position:relative;z-index:1;line-height:1}
+.landing .skate-icon{position:relative;z-index:1}
 .landing .landing-title{position:relative;z-index:1;color:#fff;font-size:32px;font-weight:900;letter-spacing:8px;margin-top:4px;text-shadow:0 2px 20px rgba(0,0,0,.5)}
 .landing .landing-sub{position:relative;z-index:1;color:rgba(255,255,255,.7);font-size:13px;letter-spacing:4px;margin-top:6px;font-weight:600}
 .landing .divider{position:relative;z-index:1;width:60px;height:2px;background:rgba(255,255,255,.4);margin:16px auto}
@@ -141,11 +141,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 
 <!-- LANDING PAGE -->
 <div class="landing" id="landingPage">
-  <div class="skate-icon">🛼</div>
+  <div class="skate-icon"><span style="display:inline-block;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12);line-height:130px;text-align:center;font-size:44px;font-weight:900;color:#fff;border:3px solid rgba(255,255,255,.2)">RS</span></div>
   <div class="landing-title">轮滑俱乐部</div>
   <div class="landing-sub">PROFESSIONAL TRAINING</div>
   <div class="divider"></div>
-  <div class="slogan">专 业 轮 滑 培 训  ·  智 能 课 消 管 理</div>
+  <div class="slogan">ROLLER SKATING · SMART MANAGEMENT</div>
   <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
 </div>
 <div class="landing-modal" id="landingModal">
