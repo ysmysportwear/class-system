@@ -203,7 +203,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <span style="font-size:11px;color:var(--t3)">团队</span>
     <span class="code" id="tmDisp">未加入</span>
     <span class="role-tag c" id="rC">教练</span>
-    <span class="role-tag b" id="rB">校长</span>`n    <button class="bts" onclick="showCoachManager()" id="btnCoachMgr" style="display:none">教练管理</button>
+    <span class="role-tag b" id="rB">校长</span>
+    <button class="bts" onclick="showCoachManager()" id="btnCoachMgr" style="display:none">教练管理</button>
     <button class="bts" onclick="changeAdminPw()" id="btnChPw" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
   </div>
@@ -611,7 +612,7 @@ async function deleteCoach(code){
 async function generateCoachCode(){
   var campus=document.getElementById('cmCampus').value.trim().toUpperCase();
   var name=document.getElementById('cmName').value.trim();
-  if(campus.length!==2||!/^[A-Z]{2}$/.test(campus)){ts('campus must be 2 letters');return}
+  if(campus.length!==2||!/^[A-Z]{2}'+/.test(campus)){ts('campus must be 2 letters');return}
   if(!name){ts('enter coach name');return}
   var r=await sb.from('team_profiles').select('team_code').like('team_code',campus+'%').order('team_code',{ascending:false}).limit(1);
   var nextNum=1;
