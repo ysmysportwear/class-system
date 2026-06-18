@@ -514,10 +514,10 @@ function renderCalendar(){
   var today=dt(new Date()),dn=['一','二','三','四','五','六','日'];
   // group schedules by day
   var byDay={};schedules.forEach(function(s){var k=s.day_of_week===0?6:s.day_of_week-1;if(!byDay[k])byDay[k]=[];byDay[k].push(s)});
-  // time slots: 8:00-22:00, every 1h
+  // time slots: 15:00-21:00
   var h='<div class=tt-hd></div>';
   for(var i=0;i<7;i++){var ds=d2s(days[i]);var cls='tt-hd'+(ds===today?' today':'');h+='<div class="'+cls+'">'+dn[i]+'<br>'+days[i].getDate()+'日</div>'}
-  for(var t=8;t<=21;t++){
+  for(var t=15;t<=21;t++){
     var tl=t.toString().padStart(2,'0')+':00';
     h+='<div class=tt-time>'+tl+'</div>';
     for(var d=0;d<7;d++){
