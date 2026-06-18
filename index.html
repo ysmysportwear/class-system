@@ -11,12 +11,14 @@
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;min-height:100vh;-webkit-tap-highlight-color:transparent}
 
 /* ── LANDING PAGE ── */
-.landing{position:fixed;top:0;left:0;right:0;bottom:0;background:#0F6E56;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
+.landing{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a1628,#0d2b1f 30%,#0F6E56 60%,#0a3d2e);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
 .landing.out{display:none!important}
-.landing .skate-icon{font-size:80px;margin-bottom:8px}
-.landing .landing-title{color:#fff;font-size:28px;font-weight:800;letter-spacing:6px}
-.landing .landing-sub{color:rgba(255,255,255,.6);font-size:14px;letter-spacing:3px;margin-top:6px}
-.landing .enter-btn{margin-top:40px;padding:16px 60px;background:#fff;border:none;border-radius:30px;color:#0F6E56;font-size:16px;font-weight:700;letter-spacing:4px;cursor:pointer}
+.landing .skate-icon{font-size:120px;position:relative;z-index:1;line-height:1}
+.landing .landing-title{position:relative;z-index:1;color:#fff;font-size:32px;font-weight:900;letter-spacing:8px;margin-top:4px;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.landing .landing-sub{position:relative;z-index:1;color:rgba(255,255,255,.7);font-size:13px;letter-spacing:4px;margin-top:6px;font-weight:600}
+.landing .divider{position:relative;z-index:1;width:60px;height:2px;background:rgba(255,255,255,.4);margin:16px auto}
+.landing .slogan{position:relative;z-index:1;color:rgba(255,255,255,.55);font-size:12px;letter-spacing:2px;text-align:center;line-height:1.8}
+.landing .enter-btn{position:relative;z-index:1;margin-top:30px;padding:14px 56px;background:linear-gradient(135deg,#0F6E56,#0d9960);border:1px solid rgba(255,255,255,.25);border-radius:30px;color:#fff;font-size:15px;font-weight:700;letter-spacing:4px;cursor:pointer;box-shadow:0 4px 20px rgba(15,110,86,.4)}
 .landing .enter-btn:active{transform:scale(.95)}
 .landing-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:250;display:none;align-items:center;justify-content:center}
 .landing-modal.show{display:flex}
@@ -132,9 +134,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 
 <!-- LANDING PAGE -->
 <div class="landing" id="landingPage">
-  <div class="skate-icon">🛼</div>
+  <div class="skate-icon">⛸️</div>
   <div class="landing-title">轮滑俱乐部</div>
-  <div class="landing-sub">CLASS CONSUMPTION SYSTEM</div>
+  <div class="landing-sub">PROFESSIONAL TRAINING</div>
+  <div class="divider"></div>
+  <div class="slogan">专 业 轮 滑 培 训  ·  智 能 课 消 管 理</div>
   <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
 </div>
 <div class="landing-modal" id="landingModal">
