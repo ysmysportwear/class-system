@@ -844,30 +844,80 @@ rParAtt=async function(){
   var ph=localStorage.getItem("cls_phone")||"";var r=await sb.from("parent_users").select("*").eq("phone",ph).maybeSingle();if(!r.data)return;
   var p=r.data;tc=p.team_code||"";var sr=await sb.from("students").select("*").eq("team_code",tc).ilike("name","%"+p.child_name+"%");
   var child=sr.data&&sr.data.length?sr.data[0]:null;
-  var h="<div style=text-align:center;padding:12px>";
-  if(p.child_photo)h+="<img src="+p.child_photo+" style=width:64px;height:64px;border-radius:50%;object-fit:cover>";
-  h+="<div style=font-size:16px;font-weight:700;margin-top:6px>"+eh(p.child_name||"")+"</div>";
-  h+="<div style=font-size:11px;color:var(--t3)> 剩余课时: "+(child?child.total_units-child.used_units:0)+"</div></div>";
+  var h="";
+  // Header card
+  h+="<div style=text-align:center;padding:14px 0>";
+  if(p.child_photo)h+="<img src="+p.child_photo+" style=width:68px;height:68px;border-radius:50%;object-fit:cover;margin-bottom:6px>";
+  h+="<div style=font-size:18px;font-weight:800>"+eh(p.child_name||"")+"</div>";
+  h+="<div style=display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:13px>";
+  h+="<span style=color:var(--g);font-weight:700>剩余 "+(child?child.total_units-child.used_units:0)+" 节</span>";
+  h+="<span style=color:var(--t3)>已用 "+(child?child.used_units:0)+" 节</span>";
+  h+="</div></div>";
+  
+  // Course & progress
   if(child&&child.course_id){
     await loadCoursesIfNeeded();
     var cid=child.course_id;var course=courses.find(function(x){return x.id===cid});
     if(course){
       var cms=milestones.filter(function(m){return m.course_id===cid}).sort(function(a,b){return a.ordinal-b.ordinal});
-      var allMs=cms.length;
       var smr=await sb.from("student_milestones").select("*").eq("student_id",child.id);var sms=smr.data||[];
+      var allMs=cms.length;
       var doneMs=cms.filter(function(m){var sm=sms.find(function(x){return x.milestone_id===m.id});return sm&&sm.status==='completed'}).length;
       var pct=allMs?Math.round(doneMs/allMs*100):0;
-      h+="<div class=goal-box><div class=goal-title>🎯 课程: "+eh(course.name)+"</div>"+eh(course.learning_goal||"")+"</div>";
-      h+="<div style=font-size:12px;font-weight:600>📊 学习进度</div>";
+      h+="<div class=card>";
+      h+="<h3>🎯 "+eh(course.name)+"</h3>";
+      if(course.learning_goal)h+="<div style=font-size:11px;color:var(--t2);margin-bottom:8px>"+eh(course.learning_goal)+"</div>";
+      h+="<div style=display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px><span>学习进度</span><span style=color:var(--g);font-weight:700>"+pct+"%</span></div>";
       h+="<div class=progress-bar><div class=fill style=width:"+pct+"%></div></div>";
-      h+="<div class=progress-pct>"+doneMs+"/"+allMs+" 已完成 ("+pct+"%)</div>";
-      if(cms.length>0){h+="<div style=font-size:12px;font-weight:600;margin-top:12px>📋 小目标</div>";cms.forEach(function(m){var sm=sms.find(function(x){return x.milestone_id===m.id});var st=sm?sm.status:'pending',dotCls=st==='completed'?'done':st==='in_progress'?'active':'pending',txt=st==='completed'?'已完成':st==='in_progress'?'进行中':'待开始';h+="<div class=milestone-item><div class=ms-dot "+dotCls+"></div><div class=ms-info><div class=ms-name>"+eh(m.name)+"</div><div class=ms-desc>"+eh(m.description||"")+"</div></div><span class=ms-badge "+st+">"+txt+"</span></div>"})}}
-  }else{h+="<div class=empty>暂未关联课程</div>"}
+      if(cms.length>0){
+        h+="<div style=font-size:11px;font-weight:600;margin-top:10px;color:var(--t2)>📋 学习目标</div>";
+        cms.forEach(function(m){
+          var sm=sms.find(function(x){return x.milestone_id===m.id});var st=sm?sm.status:'pending';
+          var icon=st==='completed'?'✅':st==='in_progress'?'🔄':'⏳';
+          var txt=st==='completed'?'已掌握':st==='in_progress'?'进行中':'待开始';
+          var bg=st==='completed'?'var(--gb)':'var(--bg)';
+          h+="<div style=display:flex;align-items:center;gap:8px;padding:5px 8px;background:"+bg+";border-radius:8px;margin:2px 0;font-size:11px>";
+          h+="<span>"+icon+"</span><span style=flex:1><b>"+eh(m.name)+"</b></span><span style=color:var(--t3)>"+txt+"</span></div>";
+        });
+      }
+      if(allMs>0&&doneMs===allMs){
+        h+="<div style=margin-top:10px;padding:10px;background:#E0F3EC;border-radius:10px;border:2px solid var(--g);text-align:center>";
+        h+="<div style=font-size:16px;font-weight:800;color:var(--g)>🎉 恭喜结业！</div>";
+        h+="<div style=font-size:11px;color:var(--t2);margin-top:4px>已完成全部 "+allMs+" 个学习目标 · 总消课 "+child.used_units+" 次</div></div>";
+      }
+      h+="</div>";
+    }
+  }
+  
+  // Attendance
+  if(child){
+    h+="<div class=card><h3>📅 签到记录</h3>";
+    var ar=await sb.from("attendance").select("*").eq("student_id",child.id).order("class_date",{ascending:false}).limit(30);
+    if(ar.data&&ar.data.length){
+      ar.data.forEach(function(a){
+        h+="<div style=display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:11px>";
+        h+="<div style=flex:1><b>"+a.class_date+"</b>";
+        if(a.notes)h+=" <span style=color:var(--t3)>"+eh(a.notes)+"</span>";
+        h+="</div><span style=color:var(--r);font-weight:700>-"+a.units_deducted+"</span></div>";
+      });
+    }else{h+="<div class=empty>暂无签到</div>"}
+    h+="</div>";
+  }
+  
+  // Payments
+  h+="<div class=card><h3>💵 缴费记录</h3>";
+  var pr=await sb.from("payments").select("*").eq("team_code",tc).order("payment_date",{ascending:false}).limit(20);
+  if(pr.data&&pr.data.length){
+    pr.data.forEach(function(pay){
+      h+="<div style=display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:11px>";
+      h+="<div style=flex:1><b>"+pay.payment_date+"</b>";
+      h+=" <span style=color:var(--t3)>"+eh(pay.payment_method||"")+(pay.units_purchased?" +"+pay.units_purchased+"节":"")+"</span></div>";
+      h+="<span style=color:var(--g);font-weight:700>+¥"+fm(pay.amount||0)+"</span></div>";
+    });
+  }else{h+="<div class=empty>暂无缴费</div>"}
+  h+="</div>";
+  
   document.getElementById("tab-cal").innerHTML=h;
-  if(child){var ar=await sb.from("attendance").select("*").eq("student_id",child.id).order("class_date",{ascending:false}).limit(30);
-    if(ar.data&&ar.data.length){h="<div class=cd style=margin-top:8px><h3>签到记录</h3>";
-      ar.data.forEach(function(a){h+="<div class=hist-item><div class=info><div class=n>"+a.class_date+"</div><div class=m>"+eh(a.notes||"")+"</div></div><div class=delta down>-"+a.units_deducted+"</div></div>"});
-      h+="</div>";document.getElementById("tab-cal").innerHTML+=h;}}
 };
 async function loadCoursesIfNeeded(){if(!courses.length&&sb&&sbOk)await loadCourses();}
 
