@@ -346,13 +346,13 @@ async function loadCoachOptions(){
   var r=await sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code');
   var sel=document.getElementById('sfCoach');if(!sel)return;
   sel.innerHTML='<option value="">选择教练码</option>';
-  if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'});
+  if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option value='+eh(c.team_code)+'>'+eh(c.coach_name||'unnamed')+' - '+eh(c.team_code)+'</option>'});
 }
 function updateCoachFilter(){
   var sel=document.getElementById('coachFilter');if(!sel)return;
   sel.innerHTML='<option value="all">全部教练</option>';
   if(!sb||!sbOk)return;
-  sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.team_code)+' '+eh(c.coach_name||'')+'</option>'})});
+  sb.from('team_profiles').select('team_code,coach_name').eq('system','class').order('team_code').then(function(r){if(r.data)r.data.forEach(function(c){if(c.team_code!=='__ADMIN__')sel.innerHTML+='<option>'+eh(c.coach_name||'unnamed')+' '+eh(c.team_code)+'</option>'})});
 }
 
 // Students
