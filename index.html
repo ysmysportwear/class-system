@@ -259,7 +259,7 @@ async function parentLogin(){
   if(phone.length!==11){ts('请输入正确的11位手机号');return}
   if(!sb||!sbOk){ts('网络连接中...');return}
   var exist=await sb.from('parent_users').select('id,team_code').eq('phone',phone).maybeSingle();
-  if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);document.getElementById('landingModal').classList.remove('show');enterAnimated();ts('欢迎回来')}else{
+  if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);document.getElementById('landingModal').classList.remove('show');enterParent();ts('欢迎回来')}else{
     var tcInput=prompt('请输入教练提供的团队码：');if(!tcInput)return;
     tc=tcInput.trim().toUpperCase();
     await sb.from('parent_users').insert({phone:phone,team_code:tc});
@@ -550,4 +550,41 @@ function showStuDetail(id){
   modal.innerHTML='<div class=modal>'+h+'</div>';
   modal.onclick=function(e){if(e.target===this)closeStuDetail()};
   document.body.appendChild(modal);
-}</script>
+}
+function enterParent(){
+  document.getElementById("landingPage").classList.add("out");
+  document.getElementById("app").classList.remove("hidden");document.getElementById("fab").classList.add("hidden");
+  document.getElementById("td").textContent="Parent";document.getElementById("rP").style.display="inline";
+  document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
+  document.getElementById("bSM").style.display="none";document.getElementById("bCM").style.display="none";document.getElementById("bCP").style.display="none";
+  document.getElementById("tabs").innerHTML="<button class=on onclick=swP(\"att\")>Attendance</button><button onclick=swP(\"pay\")>Payment</button>";
+  ["tab-dash","tab-cal","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
+  swP("att");
+}
+function swP(t){
+  document.getElementById("tab-cal").classList.toggle("hidden",t!=="att");document.getElementById("tab-pay").classList.toggle("hidden",t!=="pay");
+  var btns=document.querySelectorAll("#tabs button");btns.forEach(function(b,i){b.classList.toggle("on",(t==="att"&&i===0)||(t==="pay"&&i===1))});
+  if(t==="att") rParAtt();if(t==="pay") rParPay();
+}
+async function rParAtt(){
+  var ph=localStorage.getItem("cls_phone")||"";var r=await sb.from("parent_users").select("*").eq("phone",ph).maybeSingle();if(!r.data)return;
+  var p=r.data;tc=p.team_code||"";var sr=await sb.from("students").select("*").eq("team_code",tc).ilike("name","%"+p.child_name+"%");
+  var child=sr.data&&sr.data.length?sr.data[0]:null;
+  var h="<div style=text-align:center;padding:12px>";
+  if(p.child_photo)h+="<img src="+p.child_photo+" style=width:64px;height:64px;border-radius:50%;object-fit:cover>";
+  h+="<div style=font-size:16px;font-weight:700;margin-top:6px>"+eh(p.child_name||"")+"</div>";
+  h+="<div style=font-size:11px;color:var(--t3)> Remaining: "+(child?child.total_units-child.used_units:0)+"</div></div>";
+  document.getElementById("tab-cal").innerHTML=h;
+  if(child){var ar=await sb.from("attendance").select("*").eq("student_id",child.id).order("class_date",{ascending:false}).limit(30);
+    if(ar.data&&ar.data.length){h+="<div class=cd style=margin-top:8px><h3>Attendance History</h3>";
+      ar.data.forEach(function(a){h+="<div class=hist-item><div class=info><div class=n>"+a.class_date+"</div><div class=m>"+eh(a.notes||"")+"</div></div><div class=delta down>-"+a.units_deducted+"</div></div>"});
+      h+="</div>";document.getElementById("tab-cal").innerHTML+=h;}}
+}
+async function rParPay(){
+  var ph=localStorage.getItem("cls_phone")||"";var r=await sb.from("parent_users").select("*").eq("phone",ph).maybeSingle();if(!r.data)return;
+  tc=r.data.team_code||"";var pr=await sb.from("payments").select("*").eq("team_code",tc).order("payment_date",{ascending:false}).limit(50);
+  var h="<div class=cd><h3>Payment History</h3>";
+  if(pr.data&&pr.data.length){pr.data.forEach(function(pay){h+="<div class=hist-item><div class=info><div class=n>"+pay.payment_date+"</div><div class=m>"+eh(pay.payment_method||"")+(pay.units_purchased?" +"+pay.units_purchased:"")+"</div></div><div class=delta up>+"+fm(pay.amount||0)+"</div></div>"})}else{h+="<div class=empty>No records</div>"}
+  h+="</div>";document.getElementById("tab-pay").innerHTML=h;
+}
+</script>
