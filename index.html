@@ -355,6 +355,9 @@ async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subt
 function openLandingModal(){document.getElementById('landingModal').classList.add('show');setTimeout(function(){document.getElementById('tcInput').focus()},300)}
 function closeLandingModal(){document.getElementById('landingModal').classList.remove('show')}
 function init(){
+  // 版本检测：清除旧缓存，强制显示 landing
+  var ver=localStorage.getItem('cc_ver');
+  if(ver!=='v3'){localStorage.clear();localStorage.setItem('cc_ver','v3')}
   tc=localStorage.getItem('cc_tc')||'';
   role=localStorage.getItem('cc_r')||'';
   isAdm=role==='boss';
