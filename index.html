@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -128,7 +128,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 .fab:active{transform:scale(.9)}
 .hidden{display:none!important}
 .loading,.empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
-</style>
+
+.login-opt{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;margin-bottom:10px;border-radius:14px;border:2px solid #e8e8e3;background:#fff;cursor:pointer;text-align:left;transition:all .15s}
+.login-opt:active{transform:scale(.98)}
+.login-opt .lo-icon{font-size:28px;flex-shrink:0}
+.login-opt .lo-text{font-size:15px;font-weight:700;display:block}
+.login-opt .lo-desc{font-size:10px;color:#999;display:block;margin-top:1px}
+.login-opt.parent-btn{border-color:#0F6E56;background:#f8fdfa}
+.login-opt.coach-btn{border-color:#3872E0;background:#f8fafe}</style>
 </head>
 <body>
 
@@ -142,17 +149,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
 </div>
 <div class="landing-modal" id="landingModal">
-  <div class="box">
-    <h3>🔐 团队验证</h3>
-    <p>请输入您的俱乐部团队码</p>
+  <div class="box" id="landingBox">
+    <h3 style="margin-bottom:8px">👋 欢迎回来</h3>
+    <p style="margin-bottom:18px">请选择您的身份进入系统</p>
+    <button class="login-opt parent-btn" onclick="showParentLogin()">
+      <span class="lo-icon">👨‍👩‍👧</span><span class="lo-text">家长入口</span>
+      <span class="lo-desc">手机号登录 · 查看孩子课时</span>
+    </button>
+    <button class="login-opt coach-btn" onclick="showCoachLogin()">
+      <span class="lo-icon">👨‍🏫</span><span class="lo-text">教练入口</span>
+      <span class="lo-desc">团队码登录 · 管理学员课消</span>
+    </button>
+    <div style="text-align:center;margin-top:8px">
+      <span style="font-size:10px;color:#ccc;cursor:pointer" onclick="showAdminLogin()">🔑 校长登录</span>
+    </div>
+  </div>
+  <div class="box hidden" id="parentLoginBox">
+    <h3>📱 家长登录</h3>
+    <p>请输入手机号，首次自动注册</p>
+    <input id="parentPhone" type="tel" placeholder="输入11位手机号" maxlength="11" autocomplete="off" inputmode="numeric">
+    <button onclick="parentLogin()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#0F6E56;color:#fff">登 录</button>
+    <div style="margin-top:10px;font-size:11px;color:#999">
+      <span style="cursor:pointer;text-decoration:underline" onclick="showLandingMain()">← 返回</span>
+    </div>
+  </div>
+  <div class="box hidden" id="coachLoginBox">
+    <h3>👨‍🏫 教练登录</h3>
+    <p>请输入俱乐部团队码</p>
     <input id="tcInput" placeholder="例: TEAM001" autocomplete="off">
-    <button onclick="joinTeam()">加入团队</button>
-    <div style="margin-top:12px;font-size:11px;color:#999">
-      <span style="cursor:pointer;text-decoration:underline" onclick="showAdminLogin();closeLandingModal()">🔑 管理员登录</span>
+    <button onclick="joinTeam()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#0F6E56;color:#fff">进入系统</button>
+    <div style="margin-top:10px;font-size:11px;color:#999">
+      <span style="cursor:pointer;text-decoration:underline" onclick="showLandingMain()">← 返回</span>
+    </div>
+  </div>
+  <div class="box hidden" id="adminLoginBox">
+    <h3>🔑 校长登录</h3>
+    <p>请输入管理密码</p>
+    <input id="admPw" type="password" placeholder="密码">
+    <button onclick="doAdminLogin()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#0F6E56;color:#fff">登录</button>
+    <div style="margin-top:10px;font-size:11px;color:#999">
+      <span style="cursor:pointer;text-decoration:underline" onclick="showLandingMain()">← 返回</span>
     </div>
   </div>
 </div>
-
 <!-- MAIN SYSTEM -->
 <div class="page hidden" id="appMain">
   <div class="hdr">
@@ -304,6 +343,37 @@ function init(){
     enter();
   }
 }
+async function parentLogin(){
+  var phone=document.getElementById('parentPhone').value.trim().replace(/[^0-9]/g,'');
+  if(phone.length!==11){ts('请输入正确的11位手机号');return}
+  if(!sb||!sbOk){ts('网络连接中，请稍后...');return}
+  // Check if phone already registered
+  var exist=await sb.from('parent_users').select('id,team_code').eq('phone',phone).maybeSingle();
+  if(exist.data&&exist.data.id){
+    // Existing user - login
+    tc=exist.data.team_code;role='parent';isAdm=false;
+    localStorage.setItem('cc_tc',tc);localStorage.setItem('cc_r','parent');
+    closeLandingModal();enterAnimated();ts('👋 欢迎回来')
+  }else{
+    // New user - register then ask for team code
+    document.getElementById('parentPhone').value='';
+    showToast('📝 首次使用，请先联系教练获取团队码');
+    // Auto-register with empty team code for now, they fill later
+    // Actually, let them enter team code after phone
+    var tcInput=prompt('请输入教练提供的团队码：');
+    if(!tcInput){return}
+    tc=tcInput.trim().toUpperCase();
+    var ins=await sb.from('parent_users').insert({phone:phone,team_code:tc,created_at:new Date().toISOString()});
+    if(ins.error){
+      if(ins.error.message.indexOf('duplicate')>=0){ts('该手机号已注册');return}
+      ts('注册失败');return
+    }
+    role='parent';isAdm=false;
+    localStorage.setItem('cc_tc',tc);localStorage.setItem('cc_r','parent');
+    closeLandingModal();enterAnimated();ts('✅ 注册成功')
+  }
+}
+
 async function joinTeam(){
   var c=document.getElementById('tcInput').value.trim().toUpperCase();
   if(!c){ts('请输入团队码');return}
@@ -322,6 +392,13 @@ function logoutTeam(){
   document.getElementById('landingPage').classList.remove('out');
   document.getElementById('landingPage').style.display='flex';
 }
+function enterAnimated(){
+  document.getElementById('landingPage').classList.add('out');
+  setTimeout(function(){
+    document.getElementById('landingPage').style.display='none';
+    enter();
+  },600);
+}
 function enter(){
   document.getElementById('appMain').classList.remove('hidden');
   document.getElementById('fabBtn').classList.remove('hidden');
@@ -330,7 +407,12 @@ function enter(){
   document.getElementById('rB').classList.toggle('on',isAdm);
   loadAll();
 }
-function showAdminLogin(){openM('admModal');setTimeout(function(){document.getElementById('admPw').focus()},200)}
+function showLandingMain(){hideAllBoxes();document.getElementById('landingBox').classList.remove('hidden')}
+function hideAllBoxes(){['landingBox','parentLoginBox','coachLoginBox','adminLoginBox'].forEach(function(id){document.getElementById(id).classList.add('hidden')})}
+function showParentLogin(){hideAllBoxes();document.getElementById('parentLoginBox').classList.remove('hidden');setTimeout(function(){document.getElementById('parentPhone').focus()},200)}
+function showCoachLogin(){hideAllBoxes();document.getElementById('coachLoginBox').classList.remove('hidden');setTimeout(function(){document.getElementById('tcInput').focus()},200)}
+function showAdminLogin(){hideAllBoxes();document.getElementById('adminLoginBox').classList.remove('hidden');setTimeout(function(){document.getElementById('admPw').focus()},200)}
+function openLandingModal(){document.getElementById('landingModal').classList.add('show');showLandingMain()}
 async function doAdminLogin(){
   var pw=document.getElementById('admPw').value;if(!pw){ts('请输入密码');return}
   if(await s256(pw)==='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33'){
