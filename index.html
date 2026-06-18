@@ -309,12 +309,27 @@ async function loadAttendance(){var q=sb.from('attendance').select('*').order('c
 async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
 
 // Coach
+async function viewCoachParents(code){
+  if(!sb||!sbOk)return;
+  var r=await sb.from('parent_users').select('*').eq('team_code',code).order('created_at',{ascending:false});
+  var list='';
+  if(r.data&&r.data.length){
+    r.data.forEach(function(p){
+      list+='<div style=padding:6px 8px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between>';
+      list+='<span><b>'+eh(p.child_name||'?')+'</b> ('+eh(p.child_sex||'')+' '+p.child_age+'y) - '+eh(p.phone||'')+'</span></div>';
+    });
+  }else{list='<div class=empty>No parents</div>'}
+  ts('Coach '+code+' has '+((r.data||[]).length)+' parents');
+  alert('Coach: '+code+'\nParents:\n'+(r.data||[]).map(function(p){return '- '+p.child_name+' ('+p.phone+')'}).join('\n'));
+}
+
 async function showCoachManager(){loadCoachList();openM('coachModal')}
 async function loadCoachList(){
   if(!sb||!sbOk) return;
   var r=await sb.from('team_profiles').select('*').eq('system','class').order('team_code');
   var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid');
-  var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});
+  var pr=await sb.from('parent_users').select('team_code');
+  var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0,par:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});if(pr.data)pr.data.forEach(function(p){var k=p.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0,par:0};stats[k].par++});
   var el=document.getElementById('coachList');
   if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无教练</div>';return}
   var h='';
