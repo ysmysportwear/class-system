@@ -36,7 +36,7 @@ async function parentLogin(){
   var exist=await sb.from('parent_users').select('id,team_code').eq('phone',phone).maybeSingle();
   if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);document.getElementById('landingModal').classList.remove('show');enterParent();ts('欢迎回来')}else{
     localStorage.setItem('reg_phone',phone);
-    hideBoxes();document.getElementById('sub-child').classList.remove('hidden');
+    showSub('child');
   }
 }
 
