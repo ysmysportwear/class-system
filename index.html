@@ -123,7 +123,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 #toast.show{opacity:1}
 .fab{position:fixed;bottom:76px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--g);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(15,110,86,.4);z-index:50;display:flex;align-items:center;justify-content:center}
 .hidden{display:none!important}.loading,.empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
-</style>
+
+/* Course & Milestone */
+.course-card{background:var(--card);border-radius:var(--rds);padding:12px;margin-bottom:8px;box-shadow:var(--s);border-left:4px solid var(--g)}
+.course-card .cc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.course-card .cc-name{font-weight:700;font-size:14px}
+.course-card .cc-meta{font-size:10px;color:var(--t3);margin-top:2px}
+.course-card .cc-goal{font-size:11px;color:var(--t2);margin-top:6px;padding:6px 8px;background:var(--gb);border-radius:8px}
+.milestone-list{list-style:none;padding:0;margin-top:8px}
+.milestone-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:10px;margin-bottom:4px;font-size:12px}
+.milestone-item .ms-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.milestone-item .ms-dot.done{background:var(--g)}.milestone-item .ms-dot.active{background:var(--o)}.milestone-item .ms-dot.pending{background:var(--bdr)}
+.milestone-item .ms-info{flex:1}.milestone-item .ms-info .ms-name{font-weight:600}.milestone-item .ms-info .ms-desc{font-size:10px;color:var(--t3)}
+.ms-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:600}
+.ms-badge.done{background:var(--gb);color:var(--g)}.ms-badge.active{background:var(--ob);color:var(--o)}.ms-badge.pending{background:var(--bg);color:var(--t3)}
+.progress-bar{height:8px;background:var(--bg);border-radius:4px;margin:8px 0;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--g),#0d9960);border-radius:4px;transition:width .5s}
+.progress-pct{font-size:11px;color:var(--g);font-weight:700;text-align:right}
+.goal-box{background:var(--gb);border-radius:12px;padding:12px;margin:8px 0;font-size:12px}
+.goal-box .goal-title{font-weight:700;color:var(--g);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.stu-detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.stu-detail-overlay.show{display:flex}
+.stu-detail-panel{background:var(--card);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:20px 16px 30px;max-height:85vh;overflow-y:auto}
+.stu-detail-panel h3{font-size:16px;margin-bottom:12px;text-align:center}
+.quick-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.quick-actions button{padding:6px 12px;border-radius:16px;border:1px solid var(--bdr);background:var(--card);font-size:11px;font-weight:600;cursor:pointer;color:var(--t2)}
+.quick-actions button.done{background:var(--gb);color:var(--g);border-color:var(--g)}
+.quick-actions button:active{transform:scale(.96)}`n</style>
 </head>
 <body>
 
@@ -155,7 +181,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <span style="font-size:11px;color:var(--t3)">团队</span><span class="code" id="tmDisp">未加入</span>
     <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span><span class="role-tag p" id="rP">家长</span>
     <button class="bts" onclick="showSchedManager()" id="btnSched" style="display:none">课程管理</button><button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
-    <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button><button class="bts" onclick="changeParentPw()" id="btnChPw" style="display:none">改密</button>
+    <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button><button class="bts" onclick="showCourseManager()" id="btnCourse" style="display:none">课程体系</button><button class="bts" onclick="changeParentPw()" id="btnChPw" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
   </div>
 
@@ -188,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <div class="row"><div class="fld"><label>标签</label><select id="sfTag"><option value="">无</option><option value="new">新生</option><option value="renew">续费</option><option value="vip">VIP</option><option value="churn">流失预警</option></select></div><div class="fld"><label>已付 ¥</label><input id="sfPaid" type="number" step="0.01"></div></div>
 <div class="fld"><label>备注</label><input id="sfNotes"></div>
 <div class="btns"><button class="cancel" onclick="closeM('stuModal')">取消</button><button class="confirm" onclick="saveStudent()">保存</button></div></div></div>
-<input type="hidden" id="editSid">
+<input type="hidden" id="editSid"><input type="hidden" id="sfCourse">
 
 <div class="modal-bg" id="chkModal"><div class="modal"><h3>📋 签到</h3>
 <div class="fld"><label>学员</label><select id="chkStudent"></select></div>
@@ -228,6 +254,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <div id="coachList" style="max-height:300px;overflow-y:auto"></div>
 <div class="btns" style="margin-top:12px"><button class="cancel" onclick="closeM('coachModal')">关闭</button></div></div></div>
 
+
+<div class="modal-bg" id="courseModal"><div class="modal"><h3>📚 课程体系管理</h3>
+<div style="margin-bottom:16px;padding:12px;background:var(--gb);border-radius:12px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">创建新课程</div>
+<div class="fld"><label>课程名称 *</label><input id="cmCourseName" placeholder="如：初级轮滑"></div>
+<div class="fld"><label>课程简介</label><input id="cmCourseDesc" placeholder="简要描述课程内容"></div>
+<div class="row"><div class="fld"><label>总课时 *</label><input id="cmTotalSessions" type="number" min="1" value="10"></div><div class="fld"><label>建议周期(周)</label><input id="cmPeriodWeeks" type="number" min="1" value="12"></div></div>
+<div class="fld"><label>总体学习目标</label><input id="cmLearningGoal" placeholder="完成本课程后学员将能够..."></div>
+<div class="fld"><label>颜色</label><select id="cmColor"><option value="#0F6E56">🟢 绿</option><option value="#3872E0">🔵 蓝</option><option value="#E24B4A">🔴 红</option><option value="#E6950B">🟠 橙</option><option value="#7B61FF">🟣 紫</option></select></div>
+<button style="width:100%;padding:10px;margin-top:6px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="saveCourse()">创建课程</button>
+</div>
+<div style="margin-bottom:16px;padding:12px;background:var(--ob);border-radius:12px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">添加里程碑（小目标）</div>
+<div class="fld"><label>所属课程</label><select id="cmMilestoneCourse"><option value="">请先选择课程</option></select></div>
+<div class="row"><div class="fld"><label>名称 *</label><input id="cmMsName" placeholder="如：基础站立"></div><div class="fld"><label>排序</label><input id="cmMsOrder" type="number" value="1" min="1"></div></div>
+<div class="row"><div class="fld"><label>起始课时</label><input id="cmMsStart" type="number" value="1" min="1"></div><div class="fld"><label>结束课时</label><input id="cmMsEnd" type="number" value="1" min="1"></div></div>
+<div class="fld"><label>达成标准</label><input id="cmMsDesc" placeholder="描述学员应达到的标准"></div>
+<button style="width:100%;padding:10px;margin-top:6px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--o);color:#fff" onclick="addMilestone()">添加里程碑</button>
+</div>
+<div id="courseList" style="max-height:350px;overflow-y:auto"></div>
+<div class="btns" style="margin-top:12px"><button class="cancel" onclick="closeM('courseModal')">关闭</button></div></div></div>`n`n
+<div class="stu-detail-overlay" id="stuDetailOverlay"><div class="stu-detail-panel" id="stuDetailPanel"></div></div>
 <script>
 var SU='https://wltodeiequgnnmiggjte.supabase.co',SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsdG9kZWllcXVnbm5taWdnanRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzQ5NjAsImV4cCI6MjA5NzMxMDk2MH0.mqj6u-qqulz-YE5ULmW5xgLgMYFJqDpl-9DOWdrVr1s',sb=null,sbOk=false;
 (function(){if(window.__sbLoadFailed)return;try{sb=window.supabase.createClient(SU,SK);sbOk=true}catch(e){}})();
@@ -320,7 +368,7 @@ function enter(){
   document.getElementById('tmDisp').textContent=isAdm?'ALL':tc;
   document.getElementById('rC').classList.toggle('on',!isAdm);document.getElementById('rB').classList.toggle('on',isAdm);document.getElementById('rP').style.display='none';document.getElementById('btnChPw').style.display='none';
   document.getElementById('btnSched').style.display=isAdm?'inline':'none';document.getElementById('btnCM').style.display=isAdm?'inline':'none';
-  document.getElementById('btnCP').style.display=isAdm?'inline':'none';
+  document.getElementById('btnCP').style.display=isAdm?'inline':'none';document.getElementById('btnCourse').style.display=isAdm?'inline':'none';
   loadAll();
 }
 
@@ -328,7 +376,7 @@ function enter(){
 function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();showTodaySched();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt')renderReports()}
 
 // Data
-function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments();loadSchedules()}
+function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments();loadSchedules();loadCourses()}
 async function loadStudents(){var q=sb.from('students').select('*').order('created_at',{ascending:false});if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)students=r.data||[];updateCoachFilter();if(curTab==='stu')renderStudents();if(curTab==='dash'){renderStats();showTodaySched();renderRenew()}if(curTab==='cal')renderCalendar()}
 async function loadAttendance(){var q=sb.from('attendance').select('*').order('class_date',{ascending:false}).limit(200);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)attendance=r.data||[];if(curTab==='dash')renderToday();if(curTab==='rpt')renderReports()}
 async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
@@ -389,7 +437,7 @@ function renderStudents(){
   var h='';list.forEach(function(s){var r=s.total_units-s.used_units,rc=r<=0?'r':r<=3?'o':'g',tags=[];
     if(s.tag==='new')tags.push('<span class="tag new">新生</span>');if(s.tag==='renew')tags.push('<span class="tag renew">续费</span>');
     var bk=batchSel.indexOf(s.id)>=0;
-    h+='<div class="stu-card" onclick="toggleBatch(\''+s.id+'\')"><div class="sbatch'+(bk?' ck':'')+'">OK</div><div class="avatar">'+eh(s.avatar||'👤')+'</div><div class="sname">'+eh(s.name)+'</div><div class="smeta">'+eh(s.team_code||'')+'</div><div class="sremain '+rc+'">'+r+'</div></div>';
+    h+='<div class="stu-card"><div class="sbatch'+(bk?' ck':'')+'" onclick="event.stopPropagation();toggleBatch(\''+s.id+'\')">OK</div><div class="avatar" onclick="event.stopPropagation();showStudentProgress(\''+s.id+'\')">'+eh(s.avatar||'👤')+'</div><div class="sname" onclick="event.stopPropagation();showStudentProgress(\''+s.id+'\')">'+eh(s.name)+'</div><div class="smeta">'+eh(s.team_code||'')+'</div><div class="sremain '+rc+'">'+r+'</div></div>';
   });el.innerHTML=h;
   document.getElementById('batchBar').classList.toggle('show',batchSel.length>0);document.getElementById('batchCnt').textContent=batchSel.length;
 }
@@ -398,19 +446,19 @@ function clearBatch(){batchSel=[];renderStudents()}
 function showAddStudent(id){
   document.getElementById('stuMTitle').textContent=id?'编辑学员':'添加学员';document.getElementById('editSid').value=id||'';
   ['sfName','sfParent','sfPhone','sfTotal','sfPrice','sfPaid','sfNotes'].forEach(function(f){document.getElementById(f).value=''});
-  document.getElementById('sfPkg').value='custom';document.getElementById('sfExpiry').value='';document.getElementById('sfAvatar').value='🧒';document.getElementById('sfTag').value='';
+  document.getElementById('sfPkg').value='custom';document.getElementById('sfExpiry').value='';loadCourseOptions();document.getElementById('sfAvatar').value='🧒';document.getElementById('sfTag').value='';
   loadCoachOptions();
   if(id){var s=students.find(function(x){return x.id===id});if(s){
     document.getElementById('sfName').value=s.name||'';document.getElementById('sfParent').value=s.parent_name||'';document.getElementById('sfPhone').value=s.parent_phone||'';
     document.getElementById('sfCoach').value=s.team_code||'';document.getElementById('sfAvatar').value=s.avatar||'🧒';document.getElementById('sfTag').value=s.tag||'';
-    document.getElementById('sfTotal').value=s.total_units||'';document.getElementById('sfPrice').value=s.unit_price||'';document.getElementById('sfPaid').value=s.total_paid||'';document.getElementById('sfNotes').value=s.notes||'';document.getElementById('sfExpiry').value=s.expiry_date||'';document.getElementById('sfPkg').value=s.package_name||'custom';
+    document.getElementById('sfTotal').value=s.total_units||'';document.getElementById('sfPrice').value=s.unit_price||'';document.getElementById('sfPaid').value=s.total_paid||'';document.getElementById('sfNotes').value=s.notes||'';document.getElementById('sfExpiry').value=s.expiry_date||'';document.getElementById('sfPkg').value=s.course_id||'custom';document.getElementById('sfCourse').value=s.course_id||'';
   }}openM('stuModal');
 }
 async function saveStudent(){
   var id=document.getElementById('editSid').value;
   var selCoach=document.getElementById('sfCoach').value;
   var coachCode=selCoach?selCoach.split(' ')[0]:tc;
-  var d={team_code:coachCode,name:document.getElementById('sfName').value.trim(),parent_name:document.getElementById('sfParent').value.trim(),parent_phone:document.getElementById('sfPhone').value.trim(),coach:coachCode,avatar:document.getElementById('sfAvatar').value,package_name:document.getElementById('sfPkg').value,total_units:parseInt(document.getElementById('sfTotal').value)||0,expiry_date:document.getElementById('sfExpiry').value||null,unit_price:parseFloat(document.getElementById('sfPrice').value)||0,total_paid:parseFloat(document.getElementById('sfPaid').value)||0,tag:document.getElementById('sfTag').value,notes:document.getElementById('sfNotes').value.trim(),status:'active'};
+  var courseId=document.getElementById('sfCourse').value;var d={team_code:coachCode,course_id:courseId||null,name:document.getElementById('sfName').value.trim(),parent_name:document.getElementById('sfParent').value.trim(),parent_phone:document.getElementById('sfPhone').value.trim(),coach:coachCode,avatar:document.getElementById('sfAvatar').value,package_name:document.getElementById('sfPkg').value,total_units:parseInt(document.getElementById('sfTotal').value)||0,expiry_date:document.getElementById('sfExpiry').value||null,unit_price:parseFloat(document.getElementById('sfPrice').value)||0,total_paid:parseFloat(document.getElementById('sfPaid').value)||0,tag:document.getElementById('sfTag').value,notes:document.getElementById('sfNotes').value.trim(),status:'active'};
   if(!d.name){ts('请输入姓名');return}if(!d.total_units){ts('请输入数量');return}
   if(id){var r=await sb.from('students').update(d).eq('id',id);if(r.error){ts('保存失败');return}}else{d.used_units=0;var r=await sb.from('students').insert(d);if(r.error){ts('添加失败');return}}
   closeM('stuModal');loadStudents();ts(id?'已更新':'已添加');
@@ -572,7 +620,7 @@ function enterParent(){
   document.getElementById("appMain").classList.remove("hidden");document.getElementById("fabBtn").classList.add("hidden");
   document.getElementById("tmDisp").textContent="Parent";document.getElementById("rP").style.display="inline";
   document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
-  document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";
+  document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";document.getElementById("btnCourse").style.display="none";
   document.getElementById("topTabs").innerHTML="<button class=on onclick=swP(\"att\")>Attendance</button><button onclick=swP(\"pay\")>Payment</button>";
   ["tab-dash","tab-cal","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
   swP("att");
@@ -603,4 +651,159 @@ async function rParPay(){
   if(pr.data&&pr.data.length){pr.data.forEach(function(pay){h+="<div class=hist-item><div class=info><div class=n>"+pay.payment_date+"</div><div class=m>"+eh(pay.payment_method||"")+(pay.units_purchased?" +"+pay.units_purchased:"")+"</div></div><div class=delta up>+"+fm(pay.amount||0)+"</div></div>"})}else{h+="<div class=empty>No records</div>"}
   h+="</div>";document.getElementById("tab-pay").innerHTML=h;
 }
+var courses=[],milestones=[],studentMilestones=[];
+// ====== COURSE MANAGEMENT ======
+async function loadCourses(){
+  if(!sb||!sbOk)return;
+  var r=await sb.from('courses').select('*').eq('team_code',tc).order('created_at');
+  if(!r.error)courses=r.data||[];
+  var mr=await sb.from('course_milestones').select('*').eq('team_code',tc).order('ordinal');
+  if(!mr.error)milestones=mr.data||[];
+  var sr=await sb.from('student_milestones').select('*');
+  if(!sr.error)studentMilestones=sr.data||[];
+  loadCourseOptions();if(document.getElementById('courseList'))renderCourseList();
+}
+function showCourseManager(){loadCourses();openM('courseModal');renderCourseList();updateMilestoneCourseSelect();}
+function renderCourseList(){
+  var el=document.getElementById('courseList');if(!el)return;
+  if(!courses.length){el.innerHTML='<div class=empty>暂无课程，请先创建</div>';return}
+  var h='';
+  courses.forEach(function(c){
+    var cms=milestones.filter(function(m){return m.course_id===c.id});
+    h+='<div class=course-card style=border-left-color:'+eh(c.color||'#0F6E56')+'>';
+    h+='<div class=cc-header><span class=cc-name>'+eh(c.name)+'</span><span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteCourse(\"'+c.id+'\")>✕</span></div>';
+    h+='<div class=cc-meta>共 '+c.total_sessions+' 课时 | 建议 '+c.period_weeks+' 周完成</div>';
+    if(c.learning_goal)h+='<div class=cc-goal>🎯 '+eh(c.learning_goal)+'</div>';
+    if(cms.length){
+      h+='<div style=font-size:11px;font-weight:600;margin-top:8px;color:var(--t2)>里程碑小目标:</div>';
+      cms.forEach(function(m){h+='<div class=milestone-item style=font-size:11px><span style=color:var(--t3)>'+(m.ordinal||'')+'.</span>'+eh(m.name)+' <span style=font-size:9px;color:var(--t3)>第'+m.session_start+'-'+m.session_end+'课时</span><span style=cursor:pointer;color:var(--r);margin-left:auto onclick=deleteMilestone(\"'+m.id+'\")>✕</span></div>'});
+    }
+    h+='</div>';
+  });el.innerHTML=h;
+}
+async function saveCourse(){
+  var nm=document.getElementById('cmCourseName').value.trim();
+  if(!nm){ts('请输入课程名称');return}
+  var d={team_code:tc,name:nm,description:document.getElementById('cmCourseDesc').value.trim(),total_sessions:parseInt(document.getElementById('cmTotalSessions').value)||10,period_weeks:parseInt(document.getElementById('cmPeriodWeeks').value)||12,learning_goal:document.getElementById('cmLearningGoal').value.trim(),color:document.getElementById('cmColor').value};
+  var r=await sb.from('courses').insert(d);
+  if(r.error){ts('创建失败');return}
+  document.getElementById('cmCourseName').value='';document.getElementById('cmCourseDesc').value='';document.getElementById('cmLearningGoal').value='';
+  loadCourses();updateMilestoneCourseSelect();ts('课程已创建');
+}
+async function deleteCourse(id){if(!confirm('确认删除此课程？里程碑将一并删除。'))return;await sb.from('courses').delete().eq('id',id);loadCourses();updateMilestoneCourseSelect();}
+function updateMilestoneCourseSelect(){
+  var sel=document.getElementById('cmMilestoneCourse');if(!sel)return;
+  sel.innerHTML='<option value="">请先选择课程</option>';
+  courses.forEach(function(c){sel.innerHTML+='<option value="'+c.id+'">'+eh(c.name)+'</option>'});
+}
+async function addMilestone(){
+  var cid=document.getElementById('cmMilestoneCourse').value,nm=document.getElementById('cmMsName').value.trim();
+  if(!cid||!nm){ts('请选择课程并填写名称');return}
+  var d={team_code:tc,course_id:cid,name:nm,ordinal:parseInt(document.getElementById('cmMsOrder').value)||1,description:document.getElementById('cmMsDesc').value.trim(),session_start:parseInt(document.getElementById('cmMsStart').value)||1,session_end:parseInt(document.getElementById('cmMsEnd').value)||1};
+  var r=await sb.from('course_milestones').insert(d);
+  if(r.error){ts('添加失败');return}
+  document.getElementById('cmMsName').value='';document.getElementById('cmMsDesc').value='';loadCourses();ts('里程碑已添加');
+}
+async function deleteMilestone(id){if(!confirm('删除此里程碑？'))return;await sb.from('course_milestones').delete().eq('id',id);loadCourses();}
+
+// ====== COURSE OPTIONS FOR STUDENT FORM ======
+function loadCourseOptions(){
+  var sel=document.getElementById('sfPkg');if(!sel)return;
+  sel.innerHTML='<option value="custom">自定义</option>';
+  courses.forEach(function(c){sel.innerHTML+='<option value="'+c.id+'">'+eh(c.name)+' ('+c.total_sessions+'课时)</option>'});
+  sel.onchange=function(){
+    var cid=sel.value;document.getElementById('sfCourse').value=cid;
+    if(cid!=='custom'){
+      var c=courses.find(function(x){return x.id===cid});
+      if(c){document.getElementById('sfTotal').value=c.total_sessions||10;document.getElementById('sfExpiry').value=c.period_weeks?d2s(new Date(Date.now()+c.period_weeks*7*86400000)):'';}
+    }
+  };
+}
+
+// ====== STUDENT PROGRESS VIEW ======
+function showStudentProgress(sid){
+  var s=students.find(function(x){return x.id===sid});if(!s)return;
+  if(!sb||!sbOk){ts('Loading...');return}
+  sb.from('student_milestones').select('*').eq('student_id',sid).then(function(smr){studentMilestones=smr.data||[];buildProgressPanel(s);});
+}
+function buildProgressPanel(s){
+  var cid=s.course_id;var course=cid?courses.find(function(x){return x.id===cid}):null;
+  var panel=document.getElementById('stuDetailPanel');if(!panel)return;
+  var h='<h3>'+eh(s.name)+'</h3>';
+  h+='<div style=text-align:center;font-size:40px;margin:8px 0>'+eh(s.avatar||'🧒')+'</div>';
+  h+='<div style=text-align:center;font-size:12px;color:var(--t3)>'+eh(course?course.name:s.package_name||'')+' | 剩余 '+(s.total_units-s.used_units)+' 课时</div>';
+  if(course){
+    var cms=milestones.filter(function(m){return m.course_id===cid}).sort(function(a,b){return a.ordinal-b.ordinal});
+    var allMs=cms.length;var doneMs=cms.filter(function(m){var sm=studentMilestones.find(function(x){return x.milestone_id===m.id});return sm&&sm.status==='completed'}).length;
+    var pct=allMs?Math.round(doneMs/allMs*100):0;
+    h+='<div class=goal-box><div class=goal-title>🎯 学习目标</div>'+eh(course.learning_goal||'完成全部课程内容')+'</div>';
+    h+='<div style=font-size:12px;font-weight:600;margin-top:12px>📊 学习进度</div>';
+    h+='<div class=progress-bar><div class=fill style=width:'+pct+'%></div></div>';
+    h+='<div class=progress-pct>'+doneMs+'/'+allMs+' 里程碑已完成 ('+pct+'%)</div>';
+    if(allMs>0){
+      h+='<div style=font-size:12px;font-weight:600;margin-top:12px>📋 里程碑详情</div>';
+      cms.forEach(function(m){
+        var sm=studentMilestones.find(function(x){return x.milestone_id===m.id});
+        var st=sm?sm.status:'pending',dotCls=st==='completed'?'done':st==='in_progress'?'active':'pending';
+        var badgeText=st==='completed'?'已完成':st==='in_progress'?'进行中':'未开始';
+        h+='<div class=milestone-item><div class=ms-dot '+dotCls+'></div><div class=ms-info><div class=ms-name>'+eh(m.name)+'</div><div class=ms-desc>第'+m.session_start+'-'+m.session_end+'课时 | '+eh(m.description||'')+'</div></div><span class=ms-badge '+st+'>'+badgeText+'</span></div>';
+        if(sm&&sm.coach_notes)h+='<div style=font-size:10px;color:var(--t3);margin-left:18px;margin-bottom:4px>💬 '+eh(sm.coach_notes)+'</div>';
+      });
+    }
+    h+='<div style=font-size:12px;font-weight:600;margin-top:12px>⚡ 快捷操作</div><div class=quick-actions>';
+    cms.forEach(function(m){
+      var sm=studentMilestones.find(function(x){return x.milestone_id===m.id});
+      var st=sm?sm.status:'pending';
+      if(st!=='completed')h+='<button onclick=markMilestone(\"'+s.id+'\",\"'+m.id+'\",\"completed\")>✅ '+eh(m.name)+'</button>';
+      if(st==='completed'||st==='in_progress')h+='<button onclick=markMilestone(\"'+s.id+'\",\"'+m.id+'\",\"in_progress\")>🔄 进行中</button>';
+      if(st!=='pending')h+='<button onclick=markMilestone(\"'+s.id+'\",\"'+m.id+'\",\"pending\")>↩ 重置</button>';
+    });h+='</div>';
+  }else{
+    h+='<div class=empty style=margin-top:12px>该学员未关联课程<br><span style=font-size:11px>可在编辑学员时选择课程包</span></div>';
+  }
+  h+='<div class=btns style=margin-top:12px><button class=cancel onclick=closeStuDetail()>关闭</button><button class=confirm onclick="closeStuDetail();showAddStudent(\''+s.id+'\')">✏️ 编辑</button></div>';
+  panel.innerHTML=h;document.getElementById('stuDetailOverlay').classList.add('show');
+}
+async function markMilestone(sid,mid,status){
+  var r=await sb.from('student_milestones').upsert({student_id:sid,milestone_id:mid,status:status,completed_at:status==='completed'?new Date().toISOString():null},{onConflict:'student_id,milestone_id'});
+  if(r.error){ts('操作失败');return}
+  var smr=await sb.from('student_milestones').select('*').eq('student_id',sid);studentMilestones=smr.data||[];
+  var s=students.find(function(x){return x.id===sid});if(s)buildProgressPanel(s);
+  ts(status==='completed'?'已标记完成':status==='in_progress'?'标记为进行中':'已重置');
+}
+function closeStuDetail(){document.getElementById('stuDetailOverlay').classList.remove('show')}
+
+// ====== MODIFIED PARENT VIEW WITH PROGRESS ======
+var origRParAtt=rParAtt;
+rParAtt=async function(){
+  var ph=localStorage.getItem("cls_phone")||"";var r=await sb.from("parent_users").select("*").eq("phone",ph).maybeSingle();if(!r.data)return;
+  var p=r.data;tc=p.team_code||"";var sr=await sb.from("students").select("*").eq("team_code",tc).ilike("name","%"+p.child_name+"%");
+  var child=sr.data&&sr.data.length?sr.data[0]:null;
+  var h="<div style=text-align:center;padding:12px>";
+  if(p.child_photo)h+="<img src="+p.child_photo+" style=width:64px;height:64px;border-radius:50%;object-fit:cover>";
+  h+="<div style=font-size:16px;font-weight:700;margin-top:6px>"+eh(p.child_name||"")+"</div>";
+  h+="<div style=font-size:11px;color:var(--t3)> 剩余课时: "+(child?child.total_units-child.used_units:0)+"</div></div>";
+  if(child&&child.course_id){
+    await loadCoursesIfNeeded();
+    var cid=child.course_id;var course=courses.find(function(x){return x.id===cid});
+    if(course){
+      var cms=milestones.filter(function(m){return m.course_id===cid}).sort(function(a,b){return a.ordinal-b.ordinal});
+      var allMs=cms.length;
+      var smr=await sb.from("student_milestones").select("*").eq("student_id",child.id);var sms=smr.data||[];
+      var doneMs=cms.filter(function(m){var sm=sms.find(function(x){return x.milestone_id===m.id});return sm&&sm.status==='completed'}).length;
+      var pct=allMs?Math.round(doneMs/allMs*100):0;
+      h+="<div class=goal-box><div class=goal-title>🎯 课程: "+eh(course.name)+"</div>"+eh(course.learning_goal||"")+"</div>";
+      h+="<div style=font-size:12px;font-weight:600>📊 学习进度</div>";
+      h+="<div class=progress-bar><div class=fill style=width:"+pct+"%></div></div>";
+      h+="<div class=progress-pct>"+doneMs+"/"+allMs+" 已完成 ("+pct+"%)</div>";
+      if(cms.length>0){h+="<div style=font-size:12px;font-weight:600;margin-top:12px>📋 小目标</div>";cms.forEach(function(m){var sm=sms.find(function(x){return x.milestone_id===m.id});var st=sm?sm.status:'pending',dotCls=st==='completed'?'done':st==='in_progress'?'active':'pending',txt=st==='completed'?'已完成':st==='in_progress'?'进行中':'待开始';h+="<div class=milestone-item><div class=ms-dot "+dotCls+"></div><div class=ms-info><div class=ms-name>"+eh(m.name)+"</div><div class=ms-desc>"+eh(m.description||"")+"</div></div><span class=ms-badge "+st+">"+txt+"</span></div>"})}}
+  }else{h+="<div class=empty>暂未关联课程</div>"}
+  document.getElementById("tab-cal").innerHTML=h;
+  if(child){var ar=await sb.from("attendance").select("*").eq("student_id",child.id).order("class_date",{ascending:false}).limit(30);
+    if(ar.data&&ar.data.length){h="<div class=cd style=margin-top:8px><h3>签到记录</h3>";
+      ar.data.forEach(function(a){h+="<div class=hist-item><div class=info><div class=n>"+a.class_date+"</div><div class=m>"+eh(a.notes||"")+"</div></div><div class=delta down>-"+a.units_deducted+"</div></div>"});
+      h+="</div>";document.getElementById("tab-cal").innerHTML+=h;}}
+};
+async function loadCoursesIfNeeded(){if(!courses.length&&sb&&sbOk)await loadCourses();}
+
 </script>
