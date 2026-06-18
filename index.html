@@ -658,7 +658,7 @@ async function loadCourses(){
   if(!sb||!sbOk)return;
   var r=await sb.from('courses').select('*').eq('team_code',tc).order('created_at');
   if(!r.error)courses=r.data||[];
-  var mr=await sb.from('course_milestones').select('*').eq('team_code',tc).order('ordinal');
+  var mr=await sb.from('course_milestones').select('*').order('ordinal');
   if(!mr.error)milestones=mr.data||[];
   var sr=await sb.from('student_milestones').select('*');
   if(!sr.error)studentMilestones=sr.data||[];
@@ -700,7 +700,7 @@ function updateMilestoneCourseSelect(){
 async function addMilestone(){
   var cid=document.getElementById('cmMilestoneCourse').value,nm=document.getElementById('cmMsName').value.trim();
   if(!cid||!nm){ts('请选择课程并填写名称');return}
-  var d={team_code:tc,course_id:cid,name:nm,ordinal:parseInt(document.getElementById('cmMsOrder').value)||1,description:document.getElementById('cmMsDesc').value.trim(),session_start:parseInt(document.getElementById('cmMsStart').value)||1,session_end:parseInt(document.getElementById('cmMsEnd').value)||1};
+  var d={course_id:cid,name:nm,ordinal:parseInt(document.getElementById('cmMsOrder').value)||1,description:document.getElementById('cmMsDesc').value.trim(),session_start:parseInt(document.getElementById('cmMsStart').value)||1,session_end:parseInt(document.getElementById('cmMsEnd').value)||1};
   var r=await sb.from('course_milestones').insert(d);
   if(r.error){ts('添加失败');return}
   document.getElementById('cmMsName').value='';document.getElementById('cmMsDesc').value='';loadCourses();ts('里程碑已添加');
