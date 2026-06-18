@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test</title>
+<style>
+.landing{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0a1628,#0F6E56);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.landing .skate-icon{font-size:80px;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.landing .title{color:#fff;font-size:24px;font-weight:800;letter-spacing:6px;margin-top:16px}
+.landing .sub{color:rgba(255,255,255,.5);font-size:12px;letter-spacing:3px;margin-top:4px}
+.landing button{margin-top:30px;padding:14px 50px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);border-radius:30px;color:#fff;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer}
+.particle{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.2);animation:floatUp 8s linear infinite}
+.particle:nth-child(2){left:30%;animation-duration:12s;animation-delay:2s}
+.particle:nth-child(3){left:60%;animation-duration:10s;animation-delay:4s}
+@keyframes floatUp{0%{transform:translateY(110vh);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh);opacity:0}}
+</style></head><body>
+<div class="landing">
+  <div class="particle" style="left:15%"></div>
+  <div class="particle" style="left:45%"></div>
+  <div class="particle" style="left:75%"></div>
+  <div class="skate-icon">🛼</div>
+  <div class="title">轮滑俱乐部</div>
+  <div class="sub">ANIMATION TEST</div>
+  <button onclick="alert('OK')">点 击 测 试</button>
+</div>
+</body></html>
