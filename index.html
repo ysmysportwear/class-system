@@ -539,4 +539,15 @@ async function checkinClass(sid){
   }
   closeCheckinModal();loadStudents();loadAttendance();loadSchedules();ts("Checked in "+ok);
 }
-</script>
+function showStuDetail(id){
+  var s=students.find(function(x){return x.id===id});if(!s)return;
+  var h='<div style=padding:20px;text-align:center>';
+  h+='<div style=font-size:48px;margin-bottom:8px>'+eh(s.avatar||'??')+'</div>';
+  h+='<div style=font-size:20px;font-weight:800>'+eh(s.name)+'</div>';
+  h+='<div style=font-size:12px;color:var(--t3)>'+eh(s.package_name||'')+' �� Remaining: '+eh(s.total_units-s.used_units)+'</div>';
+  h+='<div style=display:flex;gap:12px;justify-content:center;margin-top:12px><button class=bts onclick=sw("stu");closeStuDetail()>Back</button><button class=bts style=color:var(--r) onclick="closeStuDetail()">Close</button></div></div>';
+  var modal=document.createElement('div');modal.className='modal-bg show';modal.id='stuDetailMod';
+  modal.innerHTML='<div class=modal>'+h+'</div>';
+  modal.onclick=function(e){if(e.target===this)closeStuDetail()};
+  document.body.appendChild(modal);
+}</script>
