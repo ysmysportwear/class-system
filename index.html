@@ -651,13 +651,32 @@ async function loadSchedules(){
 }
 function renderSchedList(){
   var el=document.getElementById('schedList');if(!el)return;
-  if(!schedules.length){el.innerHTML='<div class=empty>no classes</div>';return}
-  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],h='';
-  schedules.forEach(function(s){
-    h+='<div style=display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;border-left:4px solid '+eh(s.color||'#0F6E56')+'>';
-    h+='<div><b>'+eh(s.class_name||'')+'</b> '+days[s.day_of_week]+' '+s.time_start+'-'+s.time_end+(s.semester_end?' ~'+s.semester_end:'')+'<br><span style=font-size:10px;color:var(--t3)>'+eh(s.coach||'')+'</span> <span style=font-size:10px;color:var(--g);cursor:pointer onclick=manageEnrollment("'+s.id+'")>['+(window._elist&&window._elist[s.id]?window._elist[s.id].length:0)+']</span></div>';
-    h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteSchedule("'+s.id+'")>X</span></div>';
-  });el.innerHTML=h;
+  var active=schedules.filter(function(s){return isActiveSemester(s)});
+  if(!active.length){el.innerHTML='<div class=empty>暂无课程</div>';return}
+  var days=['日','一','二','三','四','五','六'];
+  var groups={};
+  active.forEach(function(s){
+    var key=s.class_name+'|'+s.time_start+'|'+s.time_end+'|'+s.coach+'|'+(s.semester_end||'');
+    if(!groups[key])groups[key]={n:s.class_name,st:s.time_start,et:s.time_end,c:s.coach,cl:s.color,dy:[],se:s.semester_end,ids:[]};
+    groups[key].dy.push(s.day_of_week);
+    groups[key].ids.push(s.id);
+  });
+  var h='';
+  Object.values(groups).forEach(function(g){
+    g.dy.sort(function(a,b){return a-b});
+    var dayStr=g.dy.length===7?'每天':g.dy.length===1?days[g.dy[0]]:days[g.dy[0]]+'至'+days[g.dy[g.dy.length-1]];
+    var totalCnt=g.ids.reduce(function(sum,id){return sum+(window._elist&&window._elist[id]?window._elist[id].length:0)},0);
+    h+='<div style=display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;border-left:4px solid '+eh(g.cl||'#0F6E56')+'>';
+    h+='<div><b>'+eh(g.n)+'</b> 周'+dayStr+' '+g.st+'-'+g.et+(g.se?' 至'+g.se:'')+'<br><span style=font-size:10px;color:var(--t3)>'+eh(g.c||'')+'</span> <span style=font-size:10px;color:var(--g);cursor:pointer onclick=manageEnrollment(\x22'+g.ids[0]+'\x22)>['+totalCnt+'人]</span></div>';
+    h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteScheduleGroup(\x22'+g.ids.join(',')+'\x22)>X</span></div>';
+  });
+  el.innerHTML=h;
+}
+async function deleteScheduleGroup(ids){
+  if(!confirm('删除此课程?'))return;
+  var arr=ids.split(',');
+  for(var i=0;i<arr.length;i++){await sb.from('class_schedule').delete().eq('id',arr[i])}
+  loadSchedules();
 }
 async function addSchedule(){
   var nm=document.getElementById('smName').value.trim(),coach=document.getElementById('smCoach').value.trim();
