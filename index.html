@@ -200,6 +200,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div id="tab-rpt" class="hidden"><div class="card"><h3>📊 本月消课统计</h3><div class="chart-bar" id="consumptionChart"></div></div><div class="card"><h3>💵 本月收入</h3><div class="chart-bar" id="incomeChart"></div></div><div class="card"><h3>🏅 学员排行</h3><div id="rankPanel"></div></div></div>
 </div>
 
+
+  <div id="coachTabs" class="tabs hidden" style="margin-top:8px">
+    <button data-t="mySched" class="on" onclick="switchCoachTab('mySched')">📅 我的课表</button>
+    <button data-t="myStu" onclick="switchCoachTab('myStu')">👥 我的学生</button>
+    <button data-t="myChk" onclick="switchCoachTab('myChk')">✅ 消课打卡</button>
+    <button data-t="myInc" onclick="switchCoachTab('myInc')">💰 我的收入</button>
+  </div>
+  <div id="tab-mySched" class="hidden">
+    <div class="card"><h3>📅 我的本周课表</h3><div id="coachWeekSched"></div></div>
+  </div>
+  <div id="tab-myStu" class="hidden">
+    <div class="sf-row"><input id="coachStuSearch" placeholder="搜索我的学员..." oninput="renderCoachStudents()"></div>
+    <div id="coachStuGrid" class="stu-grid"></div>
+  </div>
+  <div id="tab-myChk" class="hidden">
+    <div class="card"><h3>✅ 消课打卡</h3>
+    <div class="fld"><label>选择课程</label><select id="coachChkSched" onchange="onCoachSchedChange()"><option value="">请先选择课程</option></select></div>
+    <div id="coachChkStudents"><div class="empty">请先选择课程</div></div>
+    </div>
+  </div>
+  <div id="tab-myInc" class="hidden">
+    <div class="card"><h3>💰 收入概览</h3><div id="coachIncomePanel"></div></div>
+  </div>
+
 <div id="toast"></div>
 <button class="fab hidden" id="fabBtn" onclick="showAddStudent()">+</button>
 
@@ -824,5 +848,123 @@ rParAtt=async function(){
       h+="</div>";document.getElementById("tab-cal").innerHTML+=h;}}
 };
 async function loadCoursesIfNeeded(){if(!courses.length&&sb&&sbOk)await loadCourses();}
+
+
+
+// ====== COACH VIEW ======
+var curCoachTab='mySched';
+function switchCoachTab(t){
+  curCoachTab=t;
+  document.querySelectorAll('#coachTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});
+  ['mySched','myStu','myChk','myInc'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});
+  if(t==='mySched')renderCoachSched();
+  if(t==='myStu')renderCoachStudents();
+  if(t==='myChk')loadCoachChkScheds();
+  if(t==='myInc')renderCoachIncome();
+}
+function renderCoachSched(){
+  var myScheds=schedules.filter(function(s){return s.coach&&s.coach.indexOf(tc)>=0});
+  var days=['周日','周一','周二','周三','周四','周五','周六'];
+  var grouped={};
+  myScheds.forEach(function(s){
+    var k=s.day_of_week;
+    if(!grouped[k])grouped[k]=[];
+    grouped[k].push(s);
+  });
+  var h='';
+  Object.keys(grouped).sort().forEach(function(k){
+    h+='<div style="margin-bottom:8px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">'+days[k]+'</div>';
+    grouped[k].forEach(function(s){
+      var cnt=window._elist&&window._elist[s.id]?window._elist[s.id].length:0;
+      h+='<div style="padding:8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;border-left:4px solid '+eh(s.color||'#0F6E56')+'">';
+      h+='<b>'+eh(s.class_name)+'</b> '+s.time_start+'-'+s.time_end+' <span style="color:var(--t3)">('+cnt+'人)</span></div>';
+    });
+    h+='</div>';
+  });
+  document.getElementById('coachWeekSched').innerHTML=h||'<div class=empty>暂无课程安排</div>';
+}
+function renderCoachStudents(){
+  var srch=(document.getElementById('coachStuSearch').value||'').toLowerCase();
+  var list=students.filter(function(s){return s.coach&&s.coach.indexOf(tc)>=0});
+  if(srch)list=list.filter(function(s){return s.name.toLowerCase().indexOf(srch)>=0||(s.parent_phone||'').indexOf(srch)>=0});
+  var el=document.getElementById('coachStuGrid');
+  if(!list.length){el.innerHTML='<div class=empty>暂无学员</div>';return}
+  var h='';
+  list.forEach(function(s){
+    var r=s.total_units-s.used_units,rc=r<=0?'r':r<=3?'o':'g';
+    h+='<div class="stu-card" onclick="showStudentProgress(\''+s.id+'\')"><div class="avatar">'+eh(s.avatar||'👤')+'</div><div class="sname">'+eh(s.name)+'</div><div class="smeta">剩'+r+'课时</div><div class="sremain '+rc+'">'+r+'</div></div>';
+  });
+  el.innerHTML=h;
+}
+var coachChkScheds=[],coachChkSel={};
+function loadCoachChkScheds(){
+  coachChkScheds=schedules.filter(function(s){return s.coach&&s.coach.indexOf(tc)>=0});
+  var sel=document.getElementById('coachChkSched');
+  sel.innerHTML='<option value="">请先选择课程</option>';
+  var today=new Date().getDay();
+  coachChkScheds.forEach(function(s){
+    var marker=s.day_of_week===today?' 🔴':'';
+    sel.innerHTML+='<option value="'+s.id+'">'+eh(s.class_name)+' '+s.time_start+'-'+s.time_end+marker+'</option>';
+  });
+  document.getElementById('coachChkStudents').innerHTML='<div class=empty>请先选择课程</div>';
+  coachChkSel={};
+}
+function onCoachSchedChange(){
+  var sid=document.getElementById('coachChkSched').value;
+  if(!sid){document.getElementById('coachChkStudents').innerHTML='<div class=empty>请先选择课程</div>';return}
+  var enrolled=window._elist&&window._elist[sid]?window._elist[sid]:[];
+  var list=students.filter(function(s){return enrolled.indexOf(s.id)>=0&&s.total_units-s.used_units>0});
+  if(!list.length){document.getElementById('coachChkStudents').innerHTML='<div class=empty>该课程暂无在册学员</div>';return}
+  var h='<div style="font-size:12px;font-weight:600;margin:8px 0">选择签到学员：</div>';
+  coachChkSel={};
+  list.forEach(function(s){
+    coachChkSel[s.id]=false;
+    h+='<label style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid var(--bdr);cursor:pointer;font-size:12px">';
+    h+='<input type="checkbox" onchange="coachChkSel[\''+s.id+'\']=this.checked">';
+    h+='<span>'+eh(s.name)+'</span><span style="color:var(--t3)">剩'+(s.total_units-s.used_units)+'</span></label>';
+  });
+  h+='<button style="width:100%;margin-top:8px;padding:10px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="doCoachCheckin()">✅ 确认消课</button>';
+  document.getElementById('coachChkStudents').innerHTML=h;
+}
+async function doCoachCheckin(){
+  var sid=document.getElementById('coachChkSched').value;
+  if(!sid){ts('请选择课程');return}
+  var sched=schedules.find(function(s){return s.id===sid});
+  var today=new Date().toISOString().slice(0,10);
+  var ok=0,count=0;
+  for(var k in coachChkSel){if(coachChkSel[k])count++;}
+  if(!count){ts('请勾选学员');return}
+  for(var k in coachChkSel){
+    if(!coachChkSel[k])continue;
+    var st=students.find(function(x){return x.id===k});
+    if(!st||st.total_units-st.used_units<1)continue;
+    await sb.from('attendance').insert({team_code:st.team_code||tc,student_id:k,class_date:today,units_deducted:1,notes:sched?sched.class_name:'',schedule_id:sid});
+    await sb.from('students').update({used_units:st.used_units+1}).eq('id',k);
+    ok++;
+  }
+  loadStudents();loadAttendance();loadSchedules();
+  document.getElementById('coachChkSched').value='';document.getElementById('coachChkStudents').innerHTML='<div class=empty>请先选择课程</div>';
+  ts('消课完成 '+ok+' 人');
+}
+function renderCoachIncome(){
+  var myStu=students.filter(function(s){return s.coach&&s.coach.indexOf(tc)>=0});
+  var totalPaid=myStu.reduce(function(sum,s){return sum+(s.total_paid||0)},0);
+  var thisMonth=new Date().getMonth(),thisYear=new Date().getFullYear();
+  var monthPay=payments.filter(function(p){
+    if(!p.payment_date)return false;
+    var d=new Date(p.payment_date+'T00:00:00');
+    return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;
+  });
+  var monthTotal=monthPay.reduce(function(sum,p){return sum+(p.amount||0)},0);
+  var monthAttendance=attendance.filter(function(a){
+    var d=new Date(a.class_date+'T00:00:00');
+    return d.getMonth()===thisMonth&&d.getFullYear()===thisYear;
+  });
+  var monthUnits=monthAttendance.reduce(function(sum,a){return sum+(a.units_deducted||0)},0);
+  var activeCount=myStu.filter(function(s){return s.status==='active'}).length;
+  var h='';
+  h+='<div class="stats"><div class="sc"><div class="n g">'+activeCount+'</div><div class="l">在读学员</div></div><div class="sc"><div class="n b">'+monthUnits+'</div><div class="l">本月消课</div></div><div class="sc"><div class="n o">¥'+fm(monthTotal)+'</div><div class="l">本月收费</div></div><div class="sc"><div class="n r">¥'+fm(totalPaid)+'</div><div class="l">累计收费</div></div></div>';
+  document.getElementById('coachIncomePanel').innerHTML=h;
+}
 
 </script>
