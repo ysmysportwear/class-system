@@ -412,7 +412,7 @@ async function doBatchCheckin(){if(batchSel.length===0){ts('请先勾选学员')
 }
 
 // Calendar
-function renderCalendar(){loadSchedDisplay();
+function renderCalendar(){
   var mon=new Date(calBase),days=[],today=dt(new Date()),sel=dt(calBase);
   for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
   document.getElementById('calRange').textContent=d2s(days[0])+' ~ '+d2s(days[6]);
