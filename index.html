@@ -310,11 +310,11 @@ function enter(){
 }
 
 // Tabs
-function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt')renderReports()}
+function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();showTodaySched();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt')renderReports()}
 
 // Data
 function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments();loadSchedules()}
-async function loadStudents(){var q=sb.from('students').select('*').order('created_at',{ascending:false});if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)students=r.data||[];updateCoachFilter();if(curTab==='stu')renderStudents();if(curTab==='dash'){renderStats();renderRenew()}if(curTab==='cal')renderCalendar()}
+async function loadStudents(){var q=sb.from('students').select('*').order('created_at',{ascending:false});if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)students=r.data||[];updateCoachFilter();if(curTab==='stu')renderStudents();if(curTab==='dash'){renderStats();showTodaySched();renderRenew()}if(curTab==='cal')renderCalendar()}
 async function loadAttendance(){var q=sb.from('attendance').select('*').order('class_date',{ascending:false}).limit(200);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)attendance=r.data||[];if(curTab==='dash')renderToday();if(curTab==='rpt')renderReports()}
 async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
 
