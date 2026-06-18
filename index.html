@@ -360,7 +360,7 @@ async function loadCoachList(){
   var h='';
   r.data.forEach(function(c){if(c.team_code==='__ADMIN__')return;var st=stats[c.team_code]||{s:0,u:0,p:0};
     h+='<div style=padding:8px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px>';
-    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+eh(c.team_code)+'</b> '+eh(c.coach_name||'')+'</span>';
+    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+'<span style=cursor:pointer onclick=viewCoachParents("'+c.team_code+'")><b>'+eh(c.coach_name||'Coach')+'</b> '+eh(c.team_code)+'</span>';
     h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteCoach("'+c.team_code+'")>X</span></div>';
     h+='<div style=display:flex;gap:12px;color:var(--t3);font-size:10px><span>学员:'+st.s+'</span><span>消课:'+st.u+'</span><span>收费:'+st.p+'</span></div></div>';
   });el.innerHTML=h||'<div class=empty>暂无教练</div>';
