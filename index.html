@@ -397,7 +397,7 @@ function enter(){
 }
 
 // Tabs
-function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();showTodaySched();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt')renderReports()}
+function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();showTodaySched();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt'){renderReports()}}
 
 // Data
 function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments();loadSchedules();loadCourses()}
@@ -534,7 +534,19 @@ function showPayment(){var sel=document.getElementById('payStudent');sel.innerHT
 async function savePayment(){var sid=document.getElementById('payStudent').value,amt=parseFloat(document.getElementById('payAmt').value)||0,units=parseInt(document.getElementById('payUnits').value)||0,date=document.getElementById('payDate').value,mtd=document.getElementById('payMtd').value,note=document.getElementById('payNote').value.trim();if(!sid||!amt){ts('请选择学员并填写金额');return}var r=await sb.from('payments').insert({team_code:tc,student_id:sid,amount:amt,payment_date:date,payment_method:mtd,units_purchased:units,notes:note});if(r.error){ts('保存失败');return}if(units>0){var s=students.find(function(x){return x.id===sid});if(s){await sb.from('students').update({total_units:(s.total_units||0)+units,total_paid:(s.total_paid||0)+amt}).eq('id',sid)}}closeM('payModal');loadStudents();loadPayments();ts('已记录')}
 
 // Reports
-function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
+function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear();
+  // Profit dashboard
+  var totalRevenue=payments.reduce(function(s,p){return s+(p.amount||0)},0);
+  var thisMonthRevenue=payments.filter(function(p){var d=new Date(p.payment_date+'T00:00:00');return d.getMonth()===cm&&d.getFullYear()===cy}).reduce(function(s,p){return s+(p.amount||0)},0);
+  var totalUnits=attendance.reduce(function(s,a){return s+(a.units_deducted||0)},0);
+  var thisMonthUnits=attendance.filter(function(a){var d=new Date(a.class_date+'T00:00:00');return d.getMonth()===cm&&d.getFullYear()===cy}).reduce(function(s,a){return s+(a.units_deducted||0)},0);
+  var activeStu=students.filter(function(s){return s.status==='active'}).length;
+  var totalStu=students.length;
+  var coachCount=0;try{var coaches=document.getElementById('coachFilter');if(coaches)coachCount=coaches.options.length-1}catch(e){}
+  var hh='';
+  hh+='<div class="stats" style="grid-template-columns:repeat(3,1fr)"><div class="sc"><div class="n g">¥'+fm(totalRevenue)+'</div><div class="l">总营收</div></div><div class="sc"><div class="n b">¥'+fm(thisMonthRevenue)+'</div><div class="l">本月营收</div></div><div class="sc"><div class="n o">'+totalUnits+'</div><div class="l">总消课数</div></div></div>';
+  hh+='<div class="stats" style="grid-template-columns:repeat(3,1fr)"><div class="sc"><div class="n g">'+thisMonthUnits+'</div><div class="l">本月消课</div></div><div class="sc"><div class="n b">'+activeStu+'/'+totalStu+'</div><div class="l">在读/总学员</div></div><div class="sc"><div class="n o">'+coachCount+'</div><div class="l">教练数</div></div></div>';
+  document.getElementById('stats').innerHTML=hh,consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
 
 
 document.addEventListener('click',function(e){var row=e.target.closest('.coach-row');if(row){var code=row.getAttribute('data-code');if(code)viewCoachParents(code)}});
@@ -793,7 +805,17 @@ function buildProgressPanel(s){
         if(sm&&sm.coach_notes)h+='<div style=font-size:10px;color:var(--t3);margin-left:18px;margin-bottom:4px>💬 '+eh(sm.coach_notes)+'</div>';
       });
     }
-    h+='<div style=font-size:12px;font-weight:600;margin-top:12px>⚡ 快捷操作</div><div class=quick-actions>';
+    if(allMs>0&&doneMs===allMs){
+    var startDate=s.enrollment_date||'';
+    h+='<div class=goal-box style=background:#E0F3EC;border:2px solid var(--g);margin-top:12px>';
+    h+='<div class=goal-title>🎉 课程结业报告</div>';
+    h+='<div style=font-size:11px;margin-top:4px>已完成全部 '+allMs+' 个学习目标</div>';
+    h+='<div style=font-size:11px>总消课: '+s.used_units+' 次 | 剩余: '+(s.total_units-s.used_units)+' 次</div>';
+    if(startDate)h+='<div style=font-size:11px>入学日期: '+startDate+'</div>';
+    h+='<div style=font-size:11px;color:var(--g);font-weight:700;margin-top:4px>✅ 已完成课程: '+eh(course.name)+'</div>';
+    h+='</div>';
+  }
+  h+='<div style=font-size:12px;font-weight:600;margin-top:12px>⚡ 快捷操作</div><div class=quick-actions>';
     cms.forEach(function(m){
       var sm=studentMilestones.find(function(x){return x.milestone_id===m.id});
       var st=sm?sm.status:'pending';
