@@ -777,9 +777,10 @@ function enterParent(){
   document.getElementById("tmDisp").textContent="Parent";document.getElementById("rP").style.display="inline";
   document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
   document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";document.getElementById("btnCourse").style.display="none";
-  document.getElementById("topTabs").innerHTML="<button class=on onclick=swP(\"att\")>Attendance</button><button onclick=swP(\"pay\")>Payment</button>";
-  ["tab-dash","tab-cal","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
-  swP("att");
+  document.getElementById("topTabs").classList.add("hidden");document.getElementById("coachTabs").classList.add("hidden");
+  ["tab-dash","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
+  document.getElementById("tab-cal").classList.remove("hidden");
+  rParAtt();
 }
 function swP(t){
   document.getElementById("tab-cal").classList.toggle("hidden",t!=="att");document.getElementById("tab-pay").classList.toggle("hidden",t!=="pay");
