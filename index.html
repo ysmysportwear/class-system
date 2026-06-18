@@ -4,7 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>轮滑俱乐部课消系统 Pro</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true">
+async function submitFeedback(){
+  var subj=document.getElementById('fbSubject').value.trim();
+  var msg=document.getElementById('fbMessage').value.trim();
+  if(!msg){ts('请输入反馈内容');return}
+  var ph=localStorage.getItem("cls_phone")||"";
+  var r=await sb.from('feedback').insert({team_code:tc,parent_phone:ph,subject:subj,message:msg});
+  if(r.error){ts('提交失败');return}
+  document.getElementById('fbSubject').value='';document.getElementById('fbMessage').value='';
+  loadMyFeedback();ts('感谢反馈！');
+}
+async function loadMyFeedback(){
+  var ph=localStorage.getItem("cls_phone")||"";
+  var el=document.getElementById('fbList');if(!el)return;
+  var r=await sb.from('feedback').select('*').eq('parent_phone',ph).order('created_at',{ascending:false}).limit(20);
+  if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无反馈记录</div>';return}
+  var h='';
+  r.data.forEach(function(f){
+    h+='<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:11px">';
+    h+='<div style="display:flex;justify-content:space-between"><b>'+eh(f.subject||'无主题')+'</b><span style="color:var(--t3)">'+(f.created_at||'').substring(0,10)+'</span></div>';
+    h+='<div style="color:var(--t2);margin-top:2px">'+eh(f.message)+'</div></div>';
+  });
+  el.innerHTML=h;
+}
+</script>
 <style>
 :root{--bg:#f2f3f5;--card:#fff;--t1:#1a1a1a;--t2:#666;--t3:#aaa;--bdr:#e8e8e3;--g:#0F6E56;--gb:#E0F3EC;--b:#3872E0;--bb:#E6F0FC;--r:#E24B4A;--rb:#FCEBEB;--o:#E6950B;--ob:#FFF4E0;--p:#7B61FF;--pb:#EDE8FF;--s:0 1px 3px rgba(0,0,0,.06);--rds:14px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -232,6 +256,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div id="tab-myInc" class="hidden">
     <div class="card"><h3>💰 收入概览</h3><div id="coachIncomePanel"></div></div>
   </div>
+
+
+  <div id="tab-fb" class="hidden"><div class="card"><h3>📝 意见反馈</h3><div class="fld"><label>主题</label><input id="fbSubject" placeholder="反馈主题"></div><div class="fld"><label>内容</label><textarea id="fbMessage" rows="3" style="width:100%;padding:8px;border:1px solid var(--bdr);border-radius:8px;font-size:13px;outline:none;resize:vertical" placeholder="请描述您的意见或建议..."></textarea></div><button style="width:100%;padding:10px;margin-top:4px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="submitFeedback()">提交反馈</button></div><div class="card" style="margin-top:8px"><h3>📋 我的反馈</h3><div id="fbList"></div></div></div>
 
 <div id="toast"></div>
 <button class="fab hidden" id="fabBtn" onclick="showAddStudent()">+</button>
@@ -381,7 +408,31 @@ async function loadChildCoachOptions(){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>轮滑俱乐部课消系统 Pro</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.__sbLoadFailed=true">
+async function submitFeedback(){
+  var subj=document.getElementById('fbSubject').value.trim();
+  var msg=document.getElementById('fbMessage').value.trim();
+  if(!msg){ts('请输入反馈内容');return}
+  var ph=localStorage.getItem("cls_phone")||"";
+  var r=await sb.from('feedback').insert({team_code:tc,parent_phone:ph,subject:subj,message:msg});
+  if(r.error){ts('提交失败');return}
+  document.getElementById('fbSubject').value='';document.getElementById('fbMessage').value='';
+  loadMyFeedback();ts('感谢反馈！');
+}
+async function loadMyFeedback(){
+  var ph=localStorage.getItem("cls_phone")||"";
+  var el=document.getElementById('fbList');if(!el)return;
+  var r=await sb.from('feedback').select('*').eq('parent_phone',ph).order('created_at',{ascending:false}).limit(20);
+  if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无反馈记录</div>';return}
+  var h='';
+  r.data.forEach(function(f){
+    h+='<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:11px">';
+    h+='<div style="display:flex;justify-content:space-between"><b>'+eh(f.subject||'无主题')+'</b><span style="color:var(--t3)">'+(f.created_at||'').substring(0,10)+'</span></div>';
+    h+='<div style="color:var(--t2);margin-top:2px">'+eh(f.message)+'</div></div>';
+  });
+  el.innerHTML=h;
+}
+</script>
 <style>
 :root{--bg:#f2f3f5;--card:#fff;--t1:#1a1a1a;--t2:#666;--t3:#aaa;--bdr:#e8e8e3;--g:#0F6E56;--gb:#E0F3EC;--b:#3872E0;--bb:#E6F0FC;--r:#E24B4A;--rb:#FCEBEB;--o:#E6950B;--ob:#FFF4E0;--p:#7B61FF;--pb:#EDE8FF;--s:0 1px 3px rgba(0,0,0,.06);--rds:14px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -609,6 +660,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div id="tab-myInc" class="hidden">
     <div class="card"><h3>💰 收入概览</h3><div id="coachIncomePanel"></div></div>
   </div>
+
+
+  <div id="tab-fb" class="hidden"><div class="card"><h3>📝 意见反馈</h3><div class="fld"><label>主题</label><input id="fbSubject" placeholder="反馈主题"></div><div class="fld"><label>内容</label><textarea id="fbMessage" rows="3" style="width:100%;padding:8px;border:1px solid var(--bdr);border-radius:8px;font-size:13px;outline:none;resize:vertical" placeholder="请描述您的意见或建议..."></textarea></div><button style="width:100%;padding:10px;margin-top:4px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="submitFeedback()">提交反馈</button></div><div class="card" style="margin-top:8px"><h3>📋 我的反馈</h3><div id="fbList"></div></div></div>
 
 <div id="toast"></div>
 <button class="fab hidden" id="fabBtn" onclick="showAddStudent()">+</button>
@@ -1545,4 +1599,28 @@ function renderCoachIncome(){
   document.getElementById('coachIncomePanel').innerHTML=h;
 }
 
+
+async function submitFeedback(){
+  var subj=document.getElementById('fbSubject').value.trim();
+  var msg=document.getElementById('fbMessage').value.trim();
+  if(!msg){ts('请输入反馈内容');return}
+  var ph=localStorage.getItem("cls_phone")||"";
+  var r=await sb.from('feedback').insert({team_code:tc,parent_phone:ph,subject:subj,message:msg});
+  if(r.error){ts('提交失败');return}
+  document.getElementById('fbSubject').value='';document.getElementById('fbMessage').value='';
+  loadMyFeedback();ts('感谢反馈！');
+}
+async function loadMyFeedback(){
+  var ph=localStorage.getItem("cls_phone")||"";
+  var el=document.getElementById('fbList');if(!el)return;
+  var r=await sb.from('feedback').select('*').eq('parent_phone',ph).order('created_at',{ascending:false}).limit(20);
+  if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无反馈记录</div>';return}
+  var h='';
+  r.data.forEach(function(f){
+    h+='<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:11px">';
+    h+='<div style="display:flex;justify-content:space-between"><b>'+eh(f.subject||'无主题')+'</b><span style="color:var(--t3)">'+(f.created_at||'').substring(0,10)+'</span></div>';
+    h+='<div style="color:var(--t2);margin-top:2px">'+eh(f.message)+'</div></div>';
+  });
+  el.innerHTML=h;
+}
 </script>
