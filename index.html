@@ -794,10 +794,18 @@ function enterParent(){
   document.getElementById("tmDisp").textContent="Parent";document.getElementById("rP").style.display="inline";
   document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
   document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";document.getElementById("btnCourse").style.display="none";
-  document.getElementById("topTabs").classList.add("hidden");document.getElementById("coachTabs").classList.add("hidden");
-  ["tab-dash","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
+  document.getElementById("coachTabs").classList.add("hidden");
+  document.getElementById("topTabs").classList.remove("hidden");
+  document.getElementById("topTabs").innerHTML="<button class=on onclick=swP2('att')>📅 课表</button><button onclick=swP2('pay')>💵 缴费</button>";
+  ["tab-dash","tab-cal","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
   document.getElementById("tab-cal").classList.remove("hidden");
   rParAtt();
+}
+function swP2(t){
+  document.querySelectorAll('#topTabs button').forEach(function(b,i){b.classList.toggle('on',(t==='att'&&i===0)||(t==='pay'&&i===1))});
+  document.getElementById("tab-cal").classList.toggle("hidden",t!=="att");
+  document.getElementById("tab-pay").classList.toggle("hidden",t!=="pay");
+  if(t==="att")rParAtt();if(t==="pay")rParPay();
 }
 function swP(t){
   document.getElementById("tab-cal").classList.toggle("hidden",t!=="att");document.getElementById("tab-pay").classList.toggle("hidden",t!=="pay");
