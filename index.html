@@ -144,7 +144,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <button class="login-opt coach-btn" onclick="showSub('coach')"><span class="lo-icon">👨‍🏫</span><span class="lo-text">教练入口</span><span class="lo-desc">团队码登录 · 管理学员课消</span></button>
     <div class="admin-login-link" onclick="showSub('admin')">🔑 校长登录</div>
   </div>
-  <div class="box hidden" id="sub-parent" style="max-width:360px"><h3>📱 家长注册/登录</h3><input id="parentPhone" type="tel" placeholder="手机号" maxlength="11" inputmode="numeric"><input id="parentTC" placeholder="教练团队码" style="margin-top:8px;text-transform:uppercase"><input id="childName" placeholder="孩子姓名" style="margin-top:8px"><div style="display:flex;gap:8px;margin-top:8px"><select id="childSex" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none;background:#fff"><option>男</option><option>女</option></select><input id="childAge" type="number" placeholder="年龄" min="3" max="18" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none"></div><div style="margin-top:8px;font-size:11px;color:#999">孩子照片（可选）</div><input id="childPhoto" type="file" accept="image/*" style="margin-top:4px;font-size:12px"><img id="childPhotoPreview" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:8px auto"><button class="btn-green" onclick="parentLogin()">注册 / 登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
+  <div class="box hidden" id="sub-parent" style="max-width:360px"><h3>📱 家长注册/登录</h3><input id="parentPhone" type="tel" placeholder="手机号" maxlength="11" inputmode="numeric"><div id="parentExtra"><input id="parentTC" placeholder="教练团队码" style="margin-top:8px;text-transform:uppercase"><input id="childName" placeholder="孩子姓名" style="margin-top:8px"><div style="display:flex;gap:8px;margin-top:8px"><select id="childSex" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none;background:#fff"><option>男</option><option>女</option></select><input id="childAge" type="number" placeholder="年龄" min="3" max="18" style="flex:1;padding:12px;border:2px solid #e8e8e3;border-radius:12px;font-size:14px;outline:none"></div><div style="margin-top:8px;font-size:11px;color:#999">孩子照片（可选）</div><input id="childPhoto" type="file" accept="image/*" style="margin-top:4px;font-size:12px"><img id="childPhotoPreview" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:8px auto"></div><button class="btn-green" id="parentBtn" onclick="parentLogin()">注册 / 登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
   <div class="box hidden" id="sub-coach"><h3>👨‍🏫 教练登录</h3><p>请输入俱乐部团队码</p><input id="tcInput" placeholder="例: TEAM001"><button class="btn-green" onclick="joinTeam()">进入系统</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
   <div class="box hidden" id="sub-admin"><h3>🔑 校长登录</h3><p>请输入管理密码</p><input id="admPw" type="password" placeholder="密码"><button class="btn-green" onclick="doAdminLogin()">登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
 </div>
@@ -430,6 +430,24 @@ async function savePayment(){var sid=document.getElementById('payStudent').value
 function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
 
 document.getElementById("childPhoto").onchange=function(e){var f=e.target.files[0];if(f){var r=new FileReader();r.onload=function(ev){var i=document.getElementById("childPhotoPreview");i.src=ev.target.result;i.style.display="block"};r.readAsDataURL(f)}};
+
+var _phEl=document.getElementById('parentPhone');
+_phEl.onblur=async function(){
+  var ph=this.value.trim().replace(/[^0-9]/g,'');
+  if(ph.length!==11)return;
+  if(!sb||!sbOk)return;
+  var r=await sb.from('parent_users').select('child_name').eq('phone',ph).maybeSingle();
+  var extra=document.getElementById('parentExtra');
+  var btn=document.getElementById('parentBtn');
+  if(r.data&&r.data.child_name){
+    extra.style.display='none';
+    btn.textContent='登录';
+  }else{
+    extra.style.display='block';
+    btn.textContent='注册';
+  }
+};
+
 init();
 
 function enterParent(){
