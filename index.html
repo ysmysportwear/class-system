@@ -363,9 +363,9 @@ async function viewCoachParents(code){
 var schedules=[];
 async function loadSchedules(){
   if(!sb||!sbOk)return;
-  var r=await sb.from('class_schedule').select('*').eq('team_code',tc).order('day_of_week').order('time_start');
+  var q=sb.from('class_schedule').select('*');if(!isAdm)q=q.eq('team_code',tc);var r=await q.order('day_of_week').order('time_start');
   if(!r.error)schedules=r.data||[];
-  var er=await sb.from('class_enrollment').select('*').eq('team_code',tc);var elist={};if(!er.error)(er.data||[]).forEach(function(e){if(!elist[e.schedule_id])elist[e.schedule_id]=[];elist[e.schedule_id].push(e.student_id)});window._elist=elist;
+  var eq=sb.from('class_enrollment').select('*');if(!isAdm)eq=eq.eq('team_code',tc);var er=await eq;var elist={};if(!er.error)(er.data||[]).forEach(function(e){if(!elist[e.schedule_id])elist[e.schedule_id]=[];elist[e.schedule_id].push(e.student_id)});window._elist=elist;
   renderCalendar();renderSchedList();
 }
 function renderSchedList(){
