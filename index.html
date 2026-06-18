@@ -153,7 +153,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div class="hdr"><h1>轮滑俱乐部课消系统</h1><p>Professional Edition</p></div>
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span><span class="code" id="tmDisp">未加入</span>
-    <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span>
+    <span class="role-tag c" id="rC">教练</span><span class="role-tag c" id="rP" style="display:none">家长</span><span class="role-tag b" id="rB">校长</span>
     <button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
     <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
@@ -430,6 +430,73 @@ async function savePayment(){var sid=document.getElementById('payStudent').value
 function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
 
 init();
+
+function enterParent(){
+  document.getElementById('landingPage').classList.add('out');
+  document.getElementById('appMain').classList.remove('hidden');
+  document.getElementById('fabBtn').classList.add('hidden');
+  document.getElementById('tmDisp').textContent='家长';
+  document.getElementById('rP').style.display='inline';
+  document.getElementById('rC').style.display='none';
+  document.getElementById('rB').style.display='none';
+  document.getElementById('btnCM').style.display='none';
+  document.getElementById('btnCP').style.display='none';
+  document.getElementById('topTabs').innerHTML='<button class=on>My Child</button><button onclick=switchTabParent("pay")>Payment</button>';
+  document.getElementById('tab-cal').classList.add('hidden');
+  document.getElementById('tab-stu').classList.add('hidden');
+  document.getElementById('tab-rpt').classList.add('hidden');
+  renderParentDashboard();
+}
+function switchTabParent(t){
+  document.getElementById('tab-dash').classList.toggle('hidden',t!=='dash');
+  document.getElementById('tab-pay').classList.toggle('hidden',t==='dash');
+  document.querySelectorAll('#topTabs button').forEach(function(b,i){b.classList.toggle('on',(t==='dash'&&i===0)||(t==='pay'&&i===1))});
+  if(t==='dash') renderParentDashboard();
+  if(t==='pay') renderParentPayments();
+}
+async function renderParentDashboard(){
+  var phone=localStorage.getItem('cls_phone')||'';
+  var r=await sb.from('parent_users').select('*').eq('phone',phone).maybeSingle();
+  if(!r.data)return;
+  var p=r.data;tc=p.team_code||'';
+  var sr=await sb.from('students').select('*').eq('team_code',tc).ilike('name','%'+p.child_name+'%');
+  var child=sr.data&&sr.data.length?sr.data[0]:null;
+  var rem=child?child.total_units-child.used_units:0;
+  var total=child?child.total_units:0;
+  var h='<div style=text-align:center;padding:20px 0>';
+  if(p.child_photo)h+='<img src='+p.child_photo+' style=width:80px;height:80px;border-radius:50%;object-fit:cover>';
+  else h+='<div style=width:80px;height:80px;border-radius:50%;background:var(--gb);line-height:80px;font-size:36px;margin:0 auto>'+(p.child_sex==='女'?'G':'B')+'</div>';
+  h+='<div style=font-size:18px;font-weight:800;margin-top:8px>'+eh(p.child_name||'')+'</div>';
+  h+='<div style=font-size:11px;color:var(--t3)>'+(p.child_sex||'')+' '+(p.child_age||'')+'y</div>';
+  h+='<div style=display:flex;gap:12px;justify-content:center;margin-top:16px>';
+  h+='<div style=text-align:center><div style=font-size:32px;font-weight:800;color:'+(rem<=3?'var(--o)':rem<=0?'var(--r)':'var(--g)')+'>'+rem+'</div><div style=font-size:11px;color:var(--t3)>Remaining</div></div>';
+  h+='<div style=text-align:center><div style=font-size:32px;font-weight:800;color:var(--b)>'+total+'</div><div style=font-size:11px;color:var(--t3)>Total</div></div></div></div>';
+  document.getElementById('tab-dash').innerHTML=h;
+  document.getElementById('tab-pay').classList.add('hidden');
+  if(child){
+    var ar=await sb.from('attendance').select('*').eq('student_id',child.id).order('class_date',{ascending:false}).limit(20);
+    if(ar.data&&ar.data.length){
+      h+='<div class=card style=margin-top:12px><h3>Attendance</h3>';
+      ar.data.forEach(function(a){h+='<div class=hist-item><div class=info><div class=n>'+a.class_date+'</div><div class=m>'+eh(a.notes||'')+'</div></div><div class=delta down>-'+a.units_deducted+'</div></div>'});
+      h+='</div>';
+    }
+    document.getElementById('tab-dash').innerHTML+=h;
+  }
+}
+async function renderParentPayments(){
+  var phone=localStorage.getItem('cls_phone')||'';
+  var r=await sb.from('parent_users').select('*').eq('phone',phone).maybeSingle();
+  if(!r.data)return;
+  tc=r.data.team_code||'';
+  var pr=await sb.from('payments').select('*').eq('team_code',tc).order('payment_date',{ascending:false}).limit(50);
+  var h='<div class=card><h3>Payment History</h3>';
+  if(pr.data&&pr.data.length){
+    pr.data.forEach(function(pay){h+='<div class=hist-item><div class=info><div class=n>'+pay.payment_date+'</div><div class=m>'+eh(pay.payment_method||'')+(pay.units_purchased?' +'+pay.units_purchased:'')+'</div></div><div class=delta up>+'+fm(pay.amount||0)+'</div></div>'});
+  }else{h+='<div class=empty>No records</div>'}
+  h+='</div>';
+  document.getElementById('tab-pay').innerHTML=h;
+  document.getElementById('tab-pay').classList.remove('hidden');
+}
 </script>
 </body>
 </html>
