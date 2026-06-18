@@ -241,7 +241,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <div style="margin-bottom:16px;padding:12px;background:var(--gb);border-radius:12px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">添加课程</div>
 <div class="row"><div class="fld"><label>课程名称</label><input id="smName" placeholder="如：初级轮滑"></div><div class="fld"><label>教练</label><select id="smCoach"><option value="">选择教练</option></select></div></div>
-<div class="row"><div class="fld"><label>星期</label><select id="smDay"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></div><div class="fld"><label>颜色</label><select id="smColor"><option value="#0F6E56">绿</option><option value="#3872E0">蓝</option><option value="#E24B4A">红</option><option value="#E6950B">橙</option><option value="#7B61FF">紫</option></select></div></div>
+<div class="row"><div class="fld"><label>从周</label><select id="smDay"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></div><div class="fld"><label>至周</label><select id="smDayEnd"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></div></div><div class="row"><div class="fld"><label>颜色</label><select id="smColor"><option value="#0F6E56">绿</option><option value="#3872E0">蓝</option><option value="#E24B4A">红</option><option value="#E6950B">橙</option><option value="#7B61FF">紫</option></select></div></div>
 <div class="row"><div class="fld"><label>开始</label><input id="smStart" type="time" value="16:00"></div><div class="fld"><label>结束</label><input id="smEnd" type="time" value="18:00"></div></div>
 <button style="width:100%;padding:10px;margin-top:6px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="addSchedule()">添加</button></div>
 <div id="schedList" style="max-height:250px;overflow-y:auto"></div>
@@ -540,7 +540,7 @@ function renderSchedList(){
 }
 async function addSchedule(){
   var nm=document.getElementById('smName').value.trim(),coach=document.getElementById('smCoach').value.trim();
-  var day=parseInt(document.getElementById('smDay').value),start=document.getElementById('smStart').value,end=document.getElementById('smEnd').value,color=document.getElementById('smColor').value;
+  var dayStart=parseInt(document.getElementById('smDay').value),dayEnd=parseInt(document.getElementById('smDayEnd').value),start=document.getElementById('smStart').value,end=document.getElementById('smEnd').value,color=document.getElementById('smColor').value;
   if(!nm){ts('need name');return}
   var r=await sb.from('class_schedule').insert({team_code:tc,class_name:nm,coach:coach,day_of_week:day,time_start:start,time_end:end,color:color});
   if(r.error){ts('failed');return}
