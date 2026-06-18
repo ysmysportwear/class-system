@@ -278,7 +278,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <button style="width:100%;padding:10px;margin-top:6px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="addSchedule()">添加</button></div>
 <div id="schedList" style="max-height:250px;overflow-y:auto"></div>
 <div class="btns" style="margin-top:12px"><button class="cancel" onclick="closeM('schedModal')">关闭</button></div></div></div>
-<div class="modal-bg" id="coachModal"><div class="modal"><h3>👨‍🏫 教练管理</h3>
+<div class="modal-bg" id="coachModal"><div class="modal" style="max-height:90vh"><h3>👨‍🏫 教练管理中心</h3>
 <div style="margin-bottom:16px;padding:12px;background:var(--gb);border-radius:12px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">生成新教练码</div>
 <div class="row"><div class="fld"><label>校区缩写 (2字母)</label><input id="cmCampus" placeholder="例: XA" maxlength="2" style="text-transform:uppercase"></div><div class="fld"><label>教练姓名</label><input id="cmName"></div></div>
@@ -418,18 +418,62 @@ async function showCoachManager(){loadCoachList();openM('coachModal')}
 async function loadCoachList(){
   if(!sb||!sbOk) return;
   var r=await sb.from('team_profiles').select('*').order('team_code');
-  var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid');
+  var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid,status,name,id,avatar,course_id');
   var pr=await sb.from('parent_users').select('team_code');
-  var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});
   var el=document.getElementById('coachList');
   if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无教练</div>';return}
   var h='';
-  r.data.forEach(function(c){if(c.team_code==='__ADMIN__')return;var st=stats[c.team_code]||{s:0,u:0,p:0};
-    h+='<div style=padding:8px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px>';
-    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span style=cursor:pointer class=coach-row data-code="'+c.team_code+'"><b>'+eh(c.coach_name||'Coach')+'</b> '+eh(c.team_code)+'</span>';
-    h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteCoach("'+c.team_code+'")>X</span></div>';
-    h+='<div style=display:flex;gap:12px;color:var(--t3);font-size:10px><span>学员:'+st.s+'</span><span>消课:'+st.u+'</span><span>收费:'+st.p+'</span></div></div>';
-  });el.innerHTML=h||'<div class=empty>暂无教练</div>';
+  r.data.forEach(function(c){
+    if(c.team_code==='__ADMIN__')return;
+    var stus=(sr.data||[]).filter(function(s){return s.team_code===c.team_code});
+    var active=stus.filter(function(s){return s.status==='active'}).length;
+    var total=stus.length;
+    var used=stus.reduce(function(s,x){return s+(x.used_units||0)},0);
+    var earned=stus.reduce(function(s,x){return s+(x.total_paid||0)},0);
+    h+='<div class="coach-panel" style="background:var(--card);border-radius:var(--rds);padding:10px 12px;margin-bottom:8px;box-shadow:var(--s);border-left:4px solid var(--p);cursor:pointer" onclick="toggleCoachDetail(\''+c.team_code+'\')">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:14px">'+eh(c.coach_name||'Coach')+'</b> <span style="font-size:10px;color:var(--t3)">'+eh(c.team_code)+'</span></div><span style="font-size:10px;color:var(--p)">▶</span></div>';
+    h+='<div style="display:flex;gap:16px;margin-top:6px;font-size:11px"><span>👥 '+active+'/'+total+' 学员</span><span>📅 消课 '+used+'</span><span>💰 ¥'+fm(earned)+'</span></div>';
+    h+='<div id="coachDetail_'+c.team_code+'" class="coach-detail" style="display:none;margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px"></div>';
+    h+='</div>';
+  });
+  el.innerHTML=h||'<div class=empty>暂无教练</div>';
+}async function toggleCoachDetail(code){
+  var el=document.getElementById('coachDetail_'+code);
+  if(!el)return;
+  if(el.style.display==='block'){el.style.display='none';el.innerHTML='';return}
+  el.style.display='block';el.innerHTML='<div style=text-align:center;color:var(--t3);font-size:12px>加载中...</div>';
+  if(!sb||!sbOk)return;
+  // Load coach data
+  var stus=students.filter(function(s){return s.team_code===code});
+  var scheds=schedules.filter(function(s){return s.coach&&s.coach.indexOf(code)>=0});
+  var active=stus.filter(function(s){return s.status==='active'}).length;
+  var used=stus.reduce(function(s,x){return s+(x.used_units||0)},0);
+  var earned=stus.reduce(function(s,x){return s+(x.total_paid||0)},0);
+  // Build detail
+  var h='';
+  // Schedule
+  if(scheds.length){
+    h+='<div style="font-size:11px;font-weight:600;margin-bottom:4px">📅 本周课程</div>';
+    var days=['日','一','二','三','四','五','六'];
+    scheds.forEach(function(s){
+      h+='<div style="font-size:10px;padding:2px 0;color:var(--t2)">'+days[s.day_of_week]+' '+s.time_start+'-'+s.time_end+' <b>'+eh(s.class_name)+'</b></div>';
+    });
+  }
+  // Students with progress
+  if(stus.length){
+    h+='<div style="font-size:11px;font-weight:600;margin:8px 0 4px">👥 学员 ('+active+'在读/'+stus.length+'总)</div>';
+    stus.forEach(function(s){
+      var r=s.total_units-s.used_units;
+      var rc=r<=0?'#E24B4A':r<=3?'#E6950B':'#0F6E56';
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--bdr);font-size:11px;cursor:pointer" onclick="event.stopPropagation();showStudentProgress(\''+s.id+'\')">';
+      h+='<span>'+eh(s.avatar||'👤')+'</span><span style="flex:1"><b>'+eh(s.name)+'</b> <span style="color:var(--t3)">剩'+r+'节</span></span>';
+      h+='<span style="color:'+rc+';font-weight:700;font-size:10px">'+r+'</span></div>';
+    });
+  }
+  // Earnings
+  h+='<div style="font-size:11px;font-weight:600;margin:8px 0 4px">💰 收入统计</div>';
+  h+='<div style="display:flex;gap:12px;font-size:11px"><span>总消课: <b>'+used+'</b>次</span><span>总收费: <b>¥'+fm(earned)+'</b></span></div>';
+  el.innerHTML=h;
 }
 async function generateCoachCode(){
   var campus=document.getElementById('cmCampus').value.trim().toUpperCase();
