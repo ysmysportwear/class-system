@@ -401,6 +401,11 @@ function enter(){
   document.getElementById('rC').classList.toggle('on',!isAdm);document.getElementById('rB').classList.toggle('on',isAdm);document.getElementById('rP').style.display='none';document.getElementById('btnChPw').style.display='none';
   document.getElementById('btnSched').style.display=isAdm?'inline':'none';document.getElementById('btnCM').style.display=isAdm?'inline':'none';
   document.getElementById('btnCP').style.display=isAdm?'inline':'none';document.getElementById('btnCourse').style.display=isAdm?'inline':'none';
+  if(!isAdm){
+    document.getElementById('topTabs').classList.add('hidden');document.getElementById('coachTabs').classList.remove('hidden');
+    ['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.add('hidden')});
+    curCoachTab='mySched';switchCoachTab('mySched');
+  }
   loadAll();
 }
 
