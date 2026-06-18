@@ -332,18 +332,19 @@ function openModal(){document.getElementById('landingModal').classList.add('show
 function init(){
   tc=localStorage.getItem('cls_tc')||'';
   isAdm=localStorage.getItem('cls_r')==='boss';
-  if(tc){document.getElementById('landingPage').classList.add('out');enter()}
+  var isParent=localStorage.getItem('cls_r')==='parent';
+  if(tc){document.getElementById('landingPage').classList.add('out');if(isParent)enterParent();else enter()}
 }
 async function parentLogin(){
   var phone=document.getElementById('parentPhone').value.trim().replace(/[^0-9]/g,'');
   if(phone.length!==11){ts('请输入正确的11位手机号');return}
   if(!sb||!sbOk){ts('网络连接中...');return}
   var exist=await sb.from('parent_users').select('id,team_code').eq('phone',phone).maybeSingle();
-  if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);document.getElementById('landingModal').classList.remove('show');enterParent();ts('欢迎回来')}else{
+  if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);document.getElementById('landingModal').classList.remove('show');enterParent();ts('欢迎回来')}else{
     var tcInput=prompt('请输入教练提供的团队码：');if(!tcInput)return;
     tc=tcInput.trim().toUpperCase();
     await sb.from('parent_users').insert({phone:phone,team_code:tc});
-    isAdm=false;localStorage.setItem('cls_tc',tc);document.getElementById('landingModal').classList.remove('show');enterAnimated();ts('注册成功')
+    isAdm=false;localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);document.getElementById('landingModal').classList.remove('show');enterParent();ts('注册成功')
   }
 }
 async function joinTeam(){
