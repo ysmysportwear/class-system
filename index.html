@@ -149,7 +149,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 .quick-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .quick-actions button{padding:6px 12px;border-radius:16px;border:1px solid var(--bdr);background:var(--card);font-size:11px;font-weight:600;cursor:pointer;color:var(--t2)}
 .quick-actions button.done{background:var(--gb);color:var(--g);border-color:var(--g)}
-.quick-actions button:active{transform:scale(.96)}</style>
+.quick-actions button:active{transform:scale(.96)}
+/* Timetable */
+.tt-grid{display:grid;grid-template-columns:50px repeat(7,1fr);gap:2px;font-size:10px;margin-top:6px}
+.tt-grid .tt-hd{text-align:center;font-weight:700;padding:4px 0;color:var(--t2)}
+.tt-grid .tt-hd.today{background:var(--gb);border-radius:6px;color:var(--g)}
+.tt-grid .tt-time{padding:2px;color:var(--t3);text-align:right;font-size:9px;border-top:1px solid var(--bdr)}
+.tt-grid .tt-cell{min-height:40px;background:var(--bg);border-radius:4px;padding:2px;position:relative}
+.tt-grid .tt-cell.today{background:#f0faf6}
+.tt-block{padding:3px 5px;border-radius:4px;margin-bottom:2px;font-size:9px;font-weight:600;color:#fff;cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}`r`n</style>
 </head>
 <body>
 
@@ -194,7 +202,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   </div>
 
   <div id="tab-dash"><div class="stats" id="stats"></div><div class="act-bar"><button class="primary" onclick="showBatchCheckin()">📋 批量签到</button><button onclick="showAddStudent()">➕ 添加学员</button></div><div class="card" id="todaySched" style="display:none"><h3>📅 今日课程</h3><div id="tsp"></div></div><div class="card"><h3>🕐 今日签到</h3><div id="todayPanel"></div></div><div class="card"><h3>⚠️ 需续费学员</h3><div id="renewPanel"></div></div></div>
-  <div id="tab-cal" class="hidden"><div class="cal-header"><button class="nav-btn" onclick="calShift(-7)">◀</button><span class="wk" id="calRange"></span><button class="nav-btn" onclick="calShift(7)">▶</button></div><div class="cal-grid" id="calGrid"></div><div class="card" style="margin-top:8px"><h3>📋 <span id="calDayLabel"></span></h3><div id="calDayClasses"></div></div></div>
+  <div id="tab-cal" class="hidden"><div class="cal-header"><button class="nav-btn" onclick="calShift(-7)">◀</button><span class="wk" id="calRange"></span><button class="nav-btn" onclick="calShift(7)">▶</button></div><div class="tt-grid" id="ttGrid"></div></div>
   <div id="tab-stu" class="hidden"><div class="sf-row"><input id="stuSearch" placeholder="搜索学员..." oninput="renderStudents()"><select id="stuFilter" onchange="renderStudents()"><option value="all">全部</option><option value="active">在读</option><option value="low">课时≤3</option><option value="zero">已用完</option></select><select id="coachFilter" onchange="renderStudents()"><option value="all">全部教练</option></select></div><div id="stuGrid"></div><div class="batch-bar" id="batchBar" onclick="doBatchCheckin()">✅ 批量签到 (<span id="batchCnt">0</span>)</div></div>
   <div id="tab-pay" class="hidden"><div class="act-bar" style="grid-template-columns:1fr;margin-bottom:8px"><button class="primary" onclick="showPayment()">💰 新增缴费</button></div><div id="payList"></div></div>
   <div id="tab-rpt" class="hidden"><div class="card"><h3>💰 经营总览</h3><div id="profitStats"></div></div><div class="card"><h3>📊 本月消课统计</h3><div class="chart-bar" id="consumptionChart"></div></div><div class="card"><h3>💵 本月收入</h3><div class="chart-bar" id="incomeChart"></div></div><div class="card"><h3>🏅 学员排行</h3><div id="rankPanel"></div></div></div>
@@ -500,14 +508,34 @@ async function doBatchCheckin(){if(batchSel.length===0){ts('请先勾选学员')
 
 // Calendar
 function renderCalendar(){
-  var mon=new Date(calBase),days=[],today=dt(new Date()),sel=dt(calBase);
-  for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
+  var mon=new Date(calBase);mon.setDate(mon.getDate()-(mon.getDay()+6)%7);
+  var days=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
   document.getElementById('calRange').textContent=d2s(days[0])+' ~ '+d2s(days[6]);
-  var attMap={};attendance.forEach(function(a){attMap[a.class_date]=attMap[a.class_date]||[];attMap[a.class_date].push(a)});
-  var h='',dn=['一','二','三','四','五','六','日'];for(var i=1;i<=7;i++)h+='<div class="day-hd">周'+dn[i-1]+'</div>';
-  for(var i=0;i<7;i++){var k=d2s(days[i]),cls=today===k?'today':'',ac=attMap[k]&&attMap[k].length>0?' has-class':'';if(k===sel)cls+=' sel';h+='<div class="day'+cls+ac+'" onclick="calPick(\''+k+'\')">'+days[i].getDate()+(attMap[k]&&attMap[k].length?'<div class="dot"></div>':'')+'</div>'}document.getElementById('calGrid').innerHTML=h;calPick(sel);
-}
-function calShift(n){calBase.setDate(calBase.getDate()+n);renderCalendar()}
+  var today=dt(new Date()),dn=['一','二','三','四','五','六','日'];
+  // group schedules by day
+  var byDay={};schedules.forEach(function(s){var k=s.day_of_week===0?6:s.day_of_week-1;if(!byDay[k])byDay[k]=[];byDay[k].push(s)});
+  // time slots: 8:00-22:00, every 1h
+  var h='<div class=tt-hd></div>';
+  for(var i=0;i<7;i++){var ds=d2s(days[i]);var cls='tt-hd'+(ds===today?' today':'');h+='<div class="'+cls+'">'+dn[i]+'<br>'+days[i].getDate()+'日</div>'}
+  for(var t=8;t<=21;t++){
+    var tl=t.toString().padStart(2,'0')+':00';
+    h+='<div class=tt-time>'+tl+'</div>';
+    for(var d=0;d<7;d++){
+      var ds=d2s(days[d]);var cls='tt-cell'+(ds===today?' today':'');
+      var dayScheds=byDay[d]||[];
+      h+='<div class="'+cls+'">';
+      dayScheds.forEach(function(s){
+        var sh=parseInt(s.time_start)||8;
+        if(sh===t){
+          var cnt=window._elist&&window._elist[s.id]?window._elist[s.id].length:0;
+          h+='<div class=tt-block style=background:'+eh(s.color||'#0F6E56')+' onclick="manageEnrollment(\''+s.id+'\')" title="'+eh(s.class_name)+' '+eh(s.coach||'')+' ('+cnt+'人)">'+eh(s.class_name)+'</div>';
+        }
+      });
+      h+='</div>';
+    }
+  }
+  document.getElementById('ttGrid').innerHTML=h;
+}function calShift(n){calBase.setDate(calBase.getDate()+n);renderCalendar()}
 function calPick(date){
   var dow=new Date(date+'T00:00:00').getDay();
   var classToday=schedules.filter(function(s){return s.day_of_week===dow});
