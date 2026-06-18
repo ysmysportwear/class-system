@@ -554,11 +554,11 @@ function showStuDetail(id){
 }
 function enterParent(){
   document.getElementById("landingPage").classList.add("out");
-  document.getElementById("app").classList.remove("hidden");document.getElementById("fab").classList.add("hidden");
-  document.getElementById("td").textContent="Parent";document.getElementById("rP").style.display="inline";
+  document.getElementById("app").classList.remove("hidden");document.getElementById("fabBtn").classList.add("hidden");
+  document.getElementById("tmDisp").textContent="Parent";document.getElementById("rP").style.display="inline";
   document.getElementById("rC").style.display="none";document.getElementById("rB").style.display="none";
-  document.getElementById("bSM").style.display="none";document.getElementById("bCM").style.display="none";document.getElementById("bCP").style.display="none";
-  document.getElementById("tabs").innerHTML="<button class=on onclick=swP(\"att\")>Attendance</button><button onclick=swP(\"pay\")>Payment</button>";
+  document.getElementById("btnSched").style.display="none";document.getElementById("btnCM").style.display="none";document.getElementById("btnChPw").style.display="none";
+  document.getElementById("topTabs").innerHTML="<button class=on onclick=swP(\"att\")>Attendance</button><button onclick=swP(\"pay\")>Payment</button>";
   ["tab-dash","tab-cal","tab-stu","tab-rpt","tab-pay"].forEach(function(x){document.getElementById(x).classList.add("hidden")});
   swP("att");
 }
