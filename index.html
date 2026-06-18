@@ -324,6 +324,7 @@ async function loadCoachList(){
   if(!sb||!sbOk) return;
   var r=await sb.from('team_profiles').select('*').order('team_code');
   var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid');
+  var pr=await sb.from('parent_users').select('team_code');
   var stats={};if(sr.data)sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={s:0,u:0,p:0};stats[k].s++;stats[k].u+=s.used_units||0;stats[k].p+=s.total_paid||0});
   var el=document.getElementById('coachList');
   if(!r.data||!r.data.length){el.innerHTML='<div class=empty>暂无教练</div>';return}
