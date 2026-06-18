@@ -415,32 +415,34 @@ function showCoachLogin(){hideAllBoxes();document.getElementById('coachLoginBox'
 function showAdminLogin(){hideAllBoxes();document.getElementById('adminLoginBox').classList.remove('hidden');setTimeout(function(){document.getElementById('admPw').focus()},200)}
 function openLandingModal(){document.getElementById('landingModal').classList.add('show');showLandingMain()}
 async function doAdminLogin(){
-  var pw=document.getElementById('admPw').value;
-  if(!pw){ts('请输入密码');return}
-  if(pw==='CG5166'){
-    tc='ADMIN';isAdm=true;role='boss';
-    localStorage.setItem('cc_tc','ADMIN');localStorage.setItem('cc_r','boss');
-    hideAllBoxes();document.getElementById('landingModal').classList.remove('show');
-    document.getElementById('admPw').value='';
-    enterAnimated();ts('🔑 校长已登录');
-  }else{ts('密码错误: '+pw);document.getElementById('admPw').value=''}
+  var pw=document.getElementById('admPw').value;if(!pw){ts('请输入密码');return}
+  var inputHash=await s256(pw);
+  var defaultHash='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33';
+  var correctHash=defaultHash;
+  try{if(sb&&sbOk){var r=await sb.from('team_profiles').select('admin_password_hash').eq('team_code','__ADMIN__').maybeSingle();if(r&&r.data&&r.data.admin_password_hash)correctHash=r.data.admin_password_hash}}catch(e){}
+  if(inputHash===correctHash){
+    tc='ADMIN';isAdm=true;role='boss';localStorage.setItem('cc_tc','ADMIN');localStorage.setItem('cc_r','boss');
+    hideAllBoxes();document.getElementById('landingModal').classList.remove('show');document.getElementById('admPw').value='';
+    enterAnimated();ts('OK');
+  }else{ts('err');document.getElementById('admPw').value=''}
 }
 
 // 校长自助修改密码
 async function changeAdminPw(){
-  if(!isAdm){ts('请先以校长身份登录');return}
-  var old=prompt('请输入当前密码：');if(!old)return;
+  if(!isAdm){ts('åplease login first');return}
+  var old=prompt('Current password:');if(!old)return;
   var oldHash=await s256(old);
-  var r=await sb.from('team_profiles').select('admin_password_hash').eq('team_code','__ADMIN__').maybeSingle();
-  var stored=r.data?r.data.admin_password_hash:'d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33';
-  if(oldHash!==stored){ts('❌ 当前密码错误');return}
-  var n1=prompt('请输入新密码：');if(!n1)return;
-  var n2=prompt('请再次输入新密码：');if(!n2)return;
-  if(n1!==n2){ts('两次输入不一致');return}
+  var defaultHash='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33';
+  var stored=defaultHash;
+  try{var r=await sb.from('team_profiles').select('admin_password_hash').eq('team_code','__ADMIN__').maybeSingle();if(r&&r.data&&r.data.admin_password_hash)stored=r.data.admin_password_hash}catch(e){}
+  if(oldHash!==stored){ts('Wrong current password');return}
+  var n1=prompt('New password:');if(!n1)return;
+  var n2=prompt('Confirm new password:');if(!n2)return;
+  if(n1!==n2){ts('Mismatch');return}
   var newHash=await s256(n1);
-  var ur=await sb.from('team_profiles').upsert({team_code:'__ADMIN__',admin_password_hash:newHash,coach_name:'系统管理员'},{onConflict:'team_code'});
-  if(ur.error){ts('修改失败');return}
-  ts('✅ 密码已更新')
+  var ur=await sb.from('team_profiles').upsert({team_code:'__ADMIN__',admin_password_hash:newHash,coach_name:'System Admin'},{onConflict:'team_code'});
+  if(ur.error){ts('Save failed');return}
+  ts('Password updated')
 }
 
 // ===== TABS =====
@@ -584,10 +586,27 @@ async function loadCoachList(){
   var r=await sb.from('team_profiles').select('*').order('team_code');
   var el=document.getElementById('coachList');
   if(!r.data||!r.data.length){el.innerHTML='<div class=empty>No coaches</div>';return}
-  var h='<div style=font-size:12px;color:var(--t2);margin-bottom:8px>Total: '+r.data.length+'</div>';
+  // Get student stats per coach
+  var sr=await sb.from('students').select('team_code,total_units,used_units,total_paid');
+  var stats={};if(sr.data) sr.data.forEach(function(s){var k=s.team_code;if(!stats[k])stats[k]={stu:0,used:0,paid:0};stats[k].stu++;stats[k].used+=s.used_units||0;stats[k].paid+=s.total_paid||0});
+  var h='';
   r.data.forEach(function(c){if(c.team_code==='__ADMIN__')return;
-    h+='<div style=display:flex;justify-content:space-between;padding:6px 8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px><span><b>'+eh(c.team_code)+'</b> '+eh(c.coach_name||'')+'</span><span style=color:var(--t3)>'+eh(c.phone||'')+'</span></div>';
-  });el.innerHTML=h;
+    var st=stats[c.team_code]||{stu:0,used:0,paid:0};
+    h+='<div style=padding:8px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px>'
+    +'<div style=display:flex;justify-content:space-between;margin-bottom:4px>'+
+    '<span><b>'+eh(c.team_code)+'</b> '+eh(c.coach_name||'')+'</span>'+
+    '<span style=cursor:pointer;color:var(--r) onclick=deleteCoach(\'+c.team_code+'\) title=Delete>✕</span></div>'+
+    '<div style=display:flex;gap:12px;color:var(--t3);font-size:10px>'+
+    '<span>Students:'+st.stu+'</span><span>Classes used:'+st.used+'</span><span>Revenue:'+st.paid+'</span></div></div>';
+  });el.innerHTML=h||'<div class=empty>No coaches</div>';
+}
+async function deleteCoach(code){
+  if(!confirm('Delete coach '+code+'? All their students will be unassigned.'))return;
+  var ur=await sb.from('team_profiles').delete().eq('team_code',code);
+  if(ur.error){ts('Delete failed');return}
+  // Unassign students
+  await sb.from('students').update({coach:''}).eq('coach',code);
+  loadCoachList();loadCoachOptions();ts('Deleted: '+code);
 }
 async function generateCoachCode(){
   var campus=document.getElementById('cmCampus').value.trim().toUpperCase();
