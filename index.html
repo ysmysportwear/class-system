@@ -542,9 +542,9 @@ async function addSchedule(){
   var nm=document.getElementById('smName').value.trim(),coach=document.getElementById('smCoach').value.trim();
   var dayStart=parseInt(document.getElementById('smDay').value),dayEnd=parseInt(document.getElementById('smDayEnd').value),start=document.getElementById('smStart').value,end=document.getElementById('smEnd').value,color=document.getElementById('smColor').value;
   if(!nm){ts('need name');return}
-  var r=await sb.from('class_schedule').insert({team_code:tc,class_name:nm,coach:coach,day_of_week:day,time_start:start,time_end:end,color:color});
-  if(r.error){ts('failed');return}
-  document.getElementById('smName').value='';document.getElementById('smCoach').value='';loadSchedules();setTimeout(function(){if(window._loadEnroll)window._loadEnroll()},800);ts('added');
+  var days=[];if(dayStart<=dayEnd){for(var d=dayStart;d<=dayEnd;d++)days.push(d)}else{for(var d=dayStart;d<=6;d++)days.push(d);for(var d=0;d<=dayEnd;d++)days.push(d)}
+  for(var i=0;i<days.length;i++){var r=await sb.from('class_schedule').insert({team_code:tc,class_name:nm,coach:coach,day_of_week:days[i],time_start:start,time_end:end,color:color});if(r.error){ts('failed');return}}
+  document.getElementById('smName').value='';document.getElementById('smCoach').value='';loadSchedules();ts('added '+days.length+' days');
 }
 async function deleteSchedule(id){if(!confirm('Delete?'))return;await sb.from('class_schedule').delete().eq('id',id);loadSchedules()}
 function showSchedManager(){loadSchedules();loadCoachSelect();openM('schedModal')}
