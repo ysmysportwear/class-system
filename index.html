@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -9,134 +9,10 @@
 :root{--bg:#f2f3f5;--card:#fff;--t1:#1a1a1a;--t2:#666;--t3:#aaa;--bdr:#e8e8e3;--g:#0F6E56;--gb:#E0F3EC;--b:#3872E0;--bb:#E6F0FC;--r:#E24B4A;--rb:#FCEBEB;--o:#E6950B;--ob:#FFF4E0;--p:#7B61FF;--pb:#F0EAFF;--s:0 1px 3px rgba(0,0,0,.06);--rds:14px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft Yahei",sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;min-height:100vh;-webkit-tap-highlight-color:transparent}
-.page{max-width:440px;margin:0 auto;padding:10px 12px 90px}
 
-.hdr{text-align:center;padding:12px 0 6px}
-.hdr h1{font-size:17px;font-weight:800;color:var(--g);letter-spacing:2px}
-.hdr p{font-size:10px;color:var(--t3);margin-top:1px}
-
-.tm-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border-radius:var(--rds);margin-bottom:8px;box-shadow:var(--s);font-size:12px}
-.tm-bar .code{font-weight:700;color:var(--g);flex:1}
-.tm-bar .role-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;display:none}
-.tm-bar .role-tag.c{background:var(--bb);color:var(--b)}.tm-bar .role-tag.p{background:var(--gb);color:var(--g)}.tm-bar .role-tag.b{background:var(--pb);color:var(--p)}
-.tm-bar .role-tag.on{display:inline}
-.tm-bar .bts{font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--bg);cursor:pointer;color:var(--t2)}
-
-.card{background:var(--card);border-radius:var(--rds);padding:12px;margin-bottom:8px;box-shadow:var(--s)}
-.card h3{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.card h3 em{font-size:16px;font-style:normal}
-
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
-.stats .sc{background:var(--card);border-radius:var(--rds);padding:10px 6px;text-align:center;box-shadow:var(--s)}
-.stats .sc .n{font-size:22px;font-weight:800}
-.stats .sc .l{font-size:10px;color:var(--t3);margin-top:1px}
-.stats .sc .n.g{color:var(--g)}.stats .sc .n.o{color:var(--o)}.stats .sc .n.r{color:var(--r)}.stats .sc .n.b{color:var(--b)}
-
-.act-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
-.act-bar button{display:flex;align-items:center;justify-content:center;gap:4px;padding:12px;border-radius:var(--rds);border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--card);box-shadow:var(--s);color:var(--t1)}
-.act-bar button:active{transform:scale(.97)}
-.act-bar button.primary{background:var(--g);color:#fff;box-shadow:0 2px 8px rgba(15,110,86,.3)}
-
-/* Calendar */
-.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.cal-header .wk{font-size:13px;font-weight:700}
-.cal-header .nav-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-size:11px}
-.cal-grid .day-hd{color:var(--t3);padding:4px 0;font-weight:600}
-.cal-grid .day{padding:6px 2px;border-radius:8px;cursor:pointer;background:var(--bg);min-height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.cal-grid .day.today{background:var(--gb);font-weight:700}
-.cal-grid .day.sel{background:var(--g);color:#fff}
-.cal-grid .day.has-class{border:2px solid var(--g)}
-.cal-grid .day .dot{width:4px;height:4px;border-radius:50%;background:var(--g);margin-top:2px}
-
-/* Student cards */
-.stu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.stu-card{background:var(--card);border-radius:var(--rds);padding:10px;box-shadow:var(--s);position:relative;cursor:pointer}
-.stu-card .avatar{width:36px;height:36px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:4px}
-.stu-card .sname{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stu-card .smeta{font-size:10px;color:var(--t3)}
-.stu-card .sremain{position:absolute;top:10px;right:10px;font-size:18px;font-weight:800}
-.stu-card .sremain.g{color:var(--g)}.stu-card .sremain.o{color:var(--o)}.stu-card .sremain.r{color:var(--r)}
-.stu-card .sbatch{position:absolute;top:6px;left:6px;width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr);display:none;align-items:center;justify-content:center;font-size:10px;background:var(--bg)}
-.stu-card .sbatch.ck{display:flex;border-color:var(--g);background:var(--gb)}
-.stu-card .tags{margin-top:4px;display:flex;gap:3px;flex-wrap:wrap}
-.stu-card .tag{font-size:9px;padding:1px 5px;border-radius:6px;font-weight:600}
-.stu-card .tag.new{background:var(--bb);color:var(--b)}
-.stu-card .tag.renew{background:var(--gb);color:var(--g)}
-.stu-card .tag.churn{background:var(--rb);color:var(--r)}
-.stu-card .tag.vip{background:var(--ob);color:var(--o)}
-
-/* Package display */
-.pkg-bar{display:flex;gap:6px;margin:8px 0;overflow-x:auto;padding-bottom:4px}
-.pkg-chip{flex-shrink:0;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bdr);background:var(--bg);white-space:nowrap}
-.pkg-chip.sel{background:var(--g);color:#fff;border-color:var(--g)}
-
-/* History grouped */
-.hist-group{margin-bottom:6px}
-.hist-group .hd{font-size:11px;font-weight:700;color:var(--t2);padding:6px 0;display:flex;justify-content:space-between}
-.hist-group .hd .cnt{color:var(--t3);font-weight:400}
-.hist-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:12px}
-.hist-item:last-child{border-bottom:none}
-.hist-item .avatar-sm{width:28px;height:28px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.hist-item .info{flex:1;min-width:0}
-.hist-item .info .n{font-weight:600}
-.hist-item .info .m{font-size:10px;color:var(--t3)}
-.hist-item .delta{text-align:right;font-weight:700}
-.hist-item .delta.up{color:var(--g)}.hist-item .delta.down{color:var(--r)}
-
-/* Charts */
-.chart-bar{display:flex;align-items:end;gap:4px;height:120px;padding:0 2px}
-.chart-bar .col{flex:1;display:flex;flex-direction:column;align-items:center}
-.chart-bar .bar{width:100%;max-width:30px;background:var(--g);border-radius:4px 4px 0 0;transition:height .3s;min-height:2px}
-.chart-bar .bar.income{background:var(--b)}
-.chart-bar .lbl{font-size:9px;color:var(--t3);margin-top:2px}
-
-/* Search & filter row */
-.sf-row{display:flex;gap:6px;margin-bottom:8px}
-.sf-row input{flex:1;padding:8px 10px;border:1px solid var(--bdr);border-radius:10px;font-size:13px;outline:none;background:var(--card)}
-.sf-row input:focus{border-color:var(--g)}
-.sf-row select{padding:8px 6px;border:1px solid var(--bdr);border-radius:10px;font-size:12px;background:var(--card);outline:none}
-.sf-row .coach-sel{max-width:70px}
-
-/* Tabs */
-.tabs{display:flex;gap:0;background:var(--card);border-radius:var(--rds);padding:3px;margin-bottom:8px;box-shadow:var(--s)}
-.tabs button{flex:1;text-align:center;padding:8px 4px;font-size:11px;font-weight:700;border-radius:11px;cursor:pointer;color:var(--t3);transition:.15s;border:none;background:none;white-space:nowrap}
-.tabs button.on{background:var(--g);color:#fff}
-
-/* Modal */
-.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
-.modal-bg.show{display:flex}
-.modal{background:var(--card);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:20px 16px 30px;max-height:85vh;overflow-y:auto}
-.modal h3{font-size:16px;margin-bottom:14px;text-align:center}
-.modal .fld{margin-bottom:10px}
-.modal .fld label{display:block;font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:700}
-.modal .fld input,.modal .fld select{width:100%;padding:9px 10px;border:1px solid var(--bdr);border-radius:8px;font-size:14px;outline:none;background:var(--bg)}
-.modal .fld input:focus,.modal .fld select:focus{border-color:var(--g)}
-.modal .row{display:flex;gap:8px}.modal .row .fld{flex:1}
-.modal .btns{display:flex;gap:8px;margin-top:14px}
-.modal .btns button{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer}
-.modal .btns .cancel{background:var(--bg);color:var(--t2)}
-.modal .btns .confirm{background:var(--g);color:#fff}
-
-/* Batch bar */
-.batch-bar{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;cursor:pointer;z-index:60;display:none;box-shadow:0 4px 16px rgba(15,110,86,.4);max-width:calc(100% - 24px);white-space:nowrap}
-.batch-bar.show{display:block}
-.batch-bar .close-batch{display:inline-block;margin-left:10px;padding:2px 8px;background:rgba(255,255,255,.2);border-radius:10px;font-size:11px;cursor:pointer}
-
-/* Toast */
-#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
-#toast.show{opacity:1}
-
-/* Float btn */
-.fab{position:fixed;bottom:76px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--g);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(15,110,86,.4);z-index:50;display:flex;align-items:center;justify-content:center}
-.fab:active{transform:scale(.9)}
-
-.hidden{display:none!important}
-.loading,.empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
-
-/* ── Landing Page ── */
+/* ── LANDING PAGE ── */
 .landing{position:fixed;top:0;left:0;right:0;bottom:0;background:#0F6E56;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200}
-.landing.out{display:none}
+.landing.out{display:none!important}
 .landing .skate-icon{font-size:80px;margin-bottom:8px}
 .landing .landing-title{color:#fff;font-size:28px;font-weight:800;letter-spacing:6px}
 .landing .landing-sub{color:rgba(255,255,255,.6);font-size:14px;letter-spacing:3px;margin-top:6px}
@@ -149,205 +25,275 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 .landing-modal .box p{font-size:12px;color:#999;margin-bottom:16px}
 .landing-modal .box input{width:100%;padding:12px 14px;border:2px solid #e8e8e3;border-radius:12px;font-size:16px;text-align:center;outline:none;text-transform:uppercase}
 .landing-modal .box input:focus{border-color:#0F6E56}
-.landing-modal .box button{width:100%;margin-top:12px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#0F6E56;color:#fff}</style>
+.landing-modal .box button{width:100%;margin-top:12px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#0F6E56;color:#fff}
+
+/* ── MAIN SYSTEM ── */
+.page{max-width:440px;margin:0 auto;padding:10px 12px 90px}
+.hdr{text-align:center;padding:12px 0 6px;position:relative;z-index:1}
+.hdr h1{font-size:17px;font-weight:800;color:var(--g);letter-spacing:2px}
+.hdr p{font-size:10px;color:var(--t3);margin-top:1px}
+.hdr .club-name{font-size:20px;font-weight:800;color:var(--g);letter-spacing:4px;display:none}
+.hdr .club-name.show{display:block}
+
+.tm-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border-radius:var(--rds);margin-bottom:8px;box-shadow:var(--s);font-size:12px}
+.tm-bar .code{font-weight:700;color:var(--g);flex:1}
+.tm-bar .role-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;display:none}
+.tm-bar .role-tag.c{background:var(--bb);color:var(--b)}.tm-bar .role-tag.b{background:var(--pb);color:var(--p)}
+.tm-bar .role-tag.on{display:inline}
+.tm-bar .bts{font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--bg);cursor:pointer;color:var(--t2)}
+
+.card{background:var(--card);border-radius:var(--rds);padding:12px;margin-bottom:8px;box-shadow:var(--s)}
+.card h3{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.stats .sc{background:var(--card);border-radius:var(--rds);padding:10px 6px;text-align:center;box-shadow:var(--s)}
+.stats .sc .n{font-size:22px;font-weight:800}.stats .sc .l{font-size:10px;color:var(--t3)}
+.stats .sc .n.g{color:var(--g)}.stats .sc .n.o{color:var(--o)}.stats .sc .n.r{color:var(--r)}.stats .sc .n.b{color:var(--b)}
+
+.act-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+.act-bar button{display:flex;align-items:center;justify-content:center;gap:4px;padding:12px;border-radius:var(--rds);border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--card);box-shadow:var(--s);color:var(--t1)}
+.act-bar button:active{transform:scale(.97)}
+.act-bar button.primary{background:var(--g);color:#fff;box-shadow:0 2px 8px rgba(15,110,86,.3)}
+
+.hist-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:12px}
+.hist-item:last-child{border-bottom:none}
+.hist-item .avatar-sm{width:28px;height:28px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.hist-item .info{flex:1;min-width:0}
+.hist-item .info .n{font-weight:600}
+.hist-item .info .m{font-size:10px;color:var(--t3)}
+.hist-item .delta{text-align:right;font-weight:700}
+.hist-item .delta.up{color:var(--g)}.hist-item .delta.down{color:var(--r)}
+
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-header .wk{font-size:13px;font-weight:700}
+.cal-header .nav-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--bdr);background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-size:11px}
+.cal-grid .day-hd{color:var(--t3);padding:4px 0;font-weight:600}
+.cal-grid .day{padding:6px 2px;border-radius:8px;cursor:pointer;background:var(--bg);min-height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cal-grid .day.today{background:var(--gb);font-weight:700}
+.cal-grid .day.sel{background:var(--g);color:#fff}
+.cal-grid .day.has-class{border:2px solid var(--g)}
+.cal-grid .day .dot{width:4px;height:4px;border-radius:50%;background:var(--g);margin-top:2px}
+
+.stu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.stu-card{background:var(--card);border-radius:var(--rds);padding:10px;box-shadow:var(--s);position:relative;cursor:pointer}
+.stu-card .avatar{width:36px;height:36px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:4px}
+.stu-card .sname{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stu-card .smeta{font-size:10px;color:var(--t3)}
+.stu-card .sremain{position:absolute;top:10px;right:10px;font-size:18px;font-weight:800}
+.stu-card .sremain.g{color:var(--g)}.stu-card .sremain.o{color:var(--o)}.stu-card .sremain.r{color:var(--r)}
+.stu-card .sbatch{position:absolute;top:6px;left:6px;width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr);display:none;align-items:center;justify-content:center;font-size:10px;background:var(--bg)}
+.stu-card .sbatch.ck{display:flex;border-color:var(--g);background:var(--gb)}
+.stu-card .tags{margin-top:4px;display:flex;gap:3px;flex-wrap:wrap}
+.stu-card .tag{font-size:9px;padding:1px 5px;border-radius:6px;font-weight:600}
+.stu-card .tag.new{background:var(--bb);color:var(--b)}.stu-card .tag.renew{background:var(--gb);color:var(--g)}
+.stu-card .tag.churn{background:var(--rb);color:var(--r)}.stu-card .tag.vip{background:var(--ob);color:var(--o)}
+
+.chart-bar{display:flex;align-items:end;gap:4px;height:100px;padding:0 2px}
+.chart-bar .col{flex:1;display:flex;flex-direction:column;align-items:center}
+.chart-bar .bar{width:100%;max-width:24px;background:var(--g);border-radius:4px 4px 0 0;min-height:2px}
+.chart-bar .bar.income{background:var(--b)}
+.chart-bar .lbl{font-size:9px;color:var(--t3)}
+
+.sf-row{display:flex;gap:6px;margin-bottom:8px}
+.sf-row input{flex:1;padding:8px 10px;border:1px solid var(--bdr);border-radius:10px;font-size:13px;outline:none;background:var(--card)}
+.sf-row select{padding:8px 6px;border:1px solid var(--bdr);border-radius:10px;font-size:12px;background:var(--card);outline:none}
+
+.tabs{display:flex;gap:0;background:var(--card);border-radius:var(--rds);padding:3px;margin-bottom:8px;box-shadow:var(--s)}
+.tabs button{flex:1;text-align:center;padding:8px 4px;font-size:11px;font-weight:700;border-radius:11px;cursor:pointer;color:var(--t3);transition:.15s;border:none;background:none;white-space:nowrap}
+.tabs button.on{background:var(--g);color:#fff}
+
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--card);width:100%;max-width:440px;border-radius:16px 16px 0 0;padding:20px 16px 30px;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:16px;margin-bottom:14px;text-align:center}
+.modal .fld{margin-bottom:10px}
+.modal .fld label{display:block;font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:700}
+.modal .fld input,.modal .fld select{width:100%;padding:9px 10px;border:1px solid var(--bdr);border-radius:8px;font-size:14px;outline:none;background:var(--bg)}
+.modal .row{display:flex;gap:8px}.modal .row .fld{flex:1}
+.modal .btns{display:flex;gap:8px;margin-top:14px}
+.modal .btns button{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer}
+.modal .btns .cancel{background:var(--bg);color:var(--t2)}
+.modal .btns .confirm{background:var(--g);color:#fff}
+
+.batch-bar{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;cursor:pointer;z-index:60;display:none;box-shadow:0 4px 16px rgba(15,110,86,.4);white-space:nowrap}
+.batch-bar.show{display:block}
+.batch-bar .close-batch{display:inline-block;margin-left:10px;padding:2px 8px;background:rgba(255,255,255,.2);border-radius:10px;font-size:11px;cursor:pointer}
+
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:999;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
+#toast.show{opacity:1}
+.fab{position:fixed;bottom:76px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--g);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(15,110,86,.4);z-index:50;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.9)}
+.hidden{display:none!important}
+.loading,.empty{text-align:center;padding:30px;color:var(--t3);font-size:13px}
+</style>
 </head>
 <body>
 
-  <!-- LANDING PAGE -->
-  <div class="landing" id="landingPage">
-    <div class="particles">
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-      <div class="particle"></div>
+<!-- LANDING PAGE -->
+<div class="landing" id="landingPage">
+  <div class="skate-icon">🛼</div>
+  <div class="landing-title">轮滑俱乐部</div>
+  <div class="landing-sub">CLASS CONSUMPTION SYSTEM</div>
+  <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
+</div>
+<div class="landing-modal" id="landingModal">
+  <div class="box">
+    <h3>🔐 团队验证</h3>
+    <p>请输入您的俱乐部团队码</p>
+    <input id="tcInput" placeholder="例: TEAM001" autocomplete="off">
+    <button onclick="joinTeam()">加入团队</button>
+    <div style="margin-top:12px;font-size:11px;color:#999">
+      <span style="cursor:pointer;text-decoration:underline" onclick="showAdminLogin();closeLandingModal()">🔑 管理员登录</span>
     </div>
-    <div class="ring"></div>
-    <div class="skate-icon">🛼</div>
-    <div class="landing-title">轮滑俱乐部</div>
-    <div class="landing-sub">CLASS CONSUMPTION SYSTEM</div>
-    <button class="enter-btn" onclick="openLandingModal()">进 入 系 统</button>
   </div>
-  <!-- Team code modal -->
-  <div class="landing-modal" id="landingModal">
-    <div class="box">
-      <h3>🔐 团队验证</h3>
-      <p>请输入您的俱乐部团队码</p>
-      <input id="tcInput" placeholder="例: TEAM001" autocomplete="off">
-      <button onclick="joinTeam()">加入团队</button>
-      <div style="margin-top:12px;font-size:11px;color:var(--t3)">
-        <span style="cursor:pointer;text-decoration:underline" onclick="showAdminLogin();closeLandingModal()">🔑 管理员登录</span>
-      </div>
-    </div>
+</div>
 
-<div class="page" id="app">
-  <div class="hdr"><h1>🛼 轮滑俱乐部课消系统</h1><p>Professional Edition</p><div class="club-name" id="clubName"><span>🏆 </span><span id="clubNameText"></span></div></div>
-  
+<!-- MAIN SYSTEM -->
+<div class="page hidden" id="appMain">
+  <div class="hdr">
+    <h1>🛼 轮滑俱乐部课消系统</h1>
+    <p>Professional Edition</p>
+    <div class="club-name" id="clubName"><span>🏆 </span><span id="clubNameText"></span></div>
+  </div>
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span>
     <span class="code" id="tmDisp">未加入</span>
     <span class="role-tag c" id="rC">教练</span>
     <span class="role-tag b" id="rB">管理员</span>
-    <span class="role-tag p" id="rP">家长</span>
     <button class="bts" onclick="logoutTeam()">切换</button>
   </div>
 
-
+  <div class="tabs" id="topTabs">
+    <button data-t="dash" class="on" onclick="switchTab('dash')">📊 首页</button>
+    <button data-t="cal" onclick="switchTab('cal')">📅 课表</button>
+    <button data-t="stu" onclick="switchTab('stu')">👥 学员</button>
+    <button data-t="pay" onclick="switchTab('pay')">💰 收费</button>
+    <button data-t="rpt" onclick="switchTab('rpt')">📈 报表</button>
   </div>
 
-  <!-- Main -->
-  <div id="main" class="hidden">
-    <!-- Tabs -->
-    <div class="tabs" id="topTabs">
-      <button data-t="dash" class="on" onclick="switchTab('dash')">📊 首页</button>
-      <button data-t="cal" onclick="switchTab('cal')">📅 课表</button>
-      <button data-t="stu" onclick="switchTab('stu')">👥 学员</button>
-      <button data-t="pay" onclick="switchTab('pay')">💰 收费</button>
-      <button data-t="rpt" onclick="switchTab('rpt')">📈 报表</button>
+  <div id="tab-dash">
+    <div class="stats" id="stats"></div>
+    <div class="act-bar">
+      <button class="primary" onclick="showBatchCheckin()">📋 批量签到</button>
+      <button onclick="showAddStudent()">➕ 添加学员</button>
     </div>
+    <div class="card"><h3>🕐 今日签到</h3><div id="todayPanel"></div></div>
+    <div class="card"><h3>⚠️ 需续费学员</h3><div id="renewPanel"></div></div>
+  </div>
 
-    <!-- DASHBOARD -->
-    <div id="tab-dash">
-      <div class="stats" id="stats"></div>
-      <div class="act-bar">
-        <button class="primary" onclick="showBatchCheckin()">📋 批量签到</button>
-        <button onclick="showAddStudent()">➕ 添加学员</button>
-      </div>
-      <div class="card"><h3><em>🕐</em>今日签到</h3><div id="todayPanel"></div></div>
-      <div class="card"><h3><em>⚠️</em>需续费学员</h3><div id="renewPanel"></div></div>
+  <div id="tab-cal" class="hidden">
+    <div class="cal-header">
+      <button class="nav-btn" onclick="calShift(-7)">◀</button>
+      <span class="wk" id="calRange"></span>
+      <button class="nav-btn" onclick="calShift(7)">▶</button>
     </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="card" style="margin-top:8px"><h3>📋 <span id="calDayLabel">选择日期</span></h3><div id="calDayClasses"></div></div>
+  </div>
 
-    <!-- CALENDAR -->
-    <div id="tab-cal" class="hidden">
-      <div class="cal-header">
-        <button class="nav-btn" onclick="calShift(-7)">◀</button>
-        <span class="wk" id="calRange"></span>
-        <button class="nav-btn" onclick="calShift(7)">▶</button>
-      </div>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="card mt-8" style="margin-top:8px"><h3><em>📋</em><span id="calDayLabel">选择日期查看课表</span></h3><div id="calDayClasses"></div></div>
+  <div id="tab-stu" class="hidden">
+    <div class="sf-row">
+      <input id="stuSearch" placeholder="搜索学员..." oninput="renderStudents()">
+      <select id="stuFilter" onchange="renderStudents()"><option value="all">全部</option><option value="active">在读</option><option value="low">课时≤3</option><option value="zero">已用完</option></select>
+      <select id="coachFilter" onchange="renderStudents()"><option value="all">全部教练</option></select>
     </div>
+    <div id="stuGrid"></div>
+    <div class="batch-bar" id="batchBar" onclick="doBatchCheckin()">✅ 批量签到 (<span id="batchCnt">0</span>) <span class="close-batch" onclick="event.stopPropagation();clearBatch()">✕</span></div>
+  </div>
 
-    <!-- STUDENTS -->
-    <div id="tab-stu" class="hidden">
-      <div class="sf-row">
-        <input id="stuSearch" placeholder="搜索学员..." oninput="renderStudents()">
-        <select id="stuFilter" onchange="renderStudents()"><option value="all">全部</option><option value="active">在读</option><option value="low">课时≤3</option><option value="zero">已用完</option></select>
-        <select id="coachFilter" class="coach-sel" onchange="renderStudents()"><option value="all">全部教练</option></select>
-      </div>
-      <div id="stuGrid" style="margin-bottom:8px"></div>
-      <div class="batch-bar" id="batchBar" onclick="doBatchCheckin()">✅ 批量签到 (<span id="batchCnt">0</span>) <span class="close-batch" onclick="event.stopPropagation();clearBatch()">✕</span></div>
-    </div>
+  <div id="tab-pay" class="hidden">
+    <div class="act-bar" style="grid-template-columns:1fr;margin-bottom:8px"><button class="primary" onclick="showPayment()">💰 新增缴费</button></div>
+    <div id="payList"></div>
+  </div>
 
-    <!-- PAYMENTS -->
-    <div id="tab-pay" class="hidden">
-      <button class="act-bar" style="grid-template-columns:1fr;margin-bottom:8px"><button class="primary" onclick="showPayment()">💰 新增缴费</button></button>
-      <div id="payList"></div>
-    </div>
-
-    <!-- REPORTS -->
-    <div id="tab-rpt" class="hidden">
-      <div class="card"><h3><em>📊</em>本月消课统计</h3><div class="chart-bar" id="consumptionChart"></div></div>
-      <div class="card"><h3><em>💵</em>本月收入统计</h3><div class="chart-bar" id="incomeChart"></div></div>
-      <div class="card"><h3><em>🏅</em>学员排行</h3><div id="rankPanel"></div></div>
-    </div>
+  <div id="tab-rpt" class="hidden">
+    <div class="card"><h3>📊 本月消课统计</h3><div class="chart-bar" id="consumptionChart"></div></div>
+    <div class="card"><h3>💵 本月收入</h3><div class="chart-bar" id="incomeChart"></div></div>
+    <div class="card"><h3>🏅 学员排行</h3><div id="rankPanel"></div></div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- TOAST -->
 <div id="toast"></div>
-<!-- Float BTN -->
 <button class="fab hidden" id="fabBtn" onclick="showAddStudent()">+</button>
 
-<!-- Modals -->
-<!-- Student Modal -->
+<!-- MODALS -->
 <div class="modal-bg" id="stuModal"><div class="modal">
-  <h3 id="stuModalTitle">添加学员</h3>
-  <div class="fld"><label>姓名 *</label><input id="sfName" placeholder="真实姓名"></div>
-  <div class="row"><div class="fld"><label>家长</label><input id="sfParent" placeholder="选填"></div><div class="fld"><label>电话</label><input id="sfPhone" placeholder="选填"></div></div>
-  <div class="fld"><label>教练</label><input id="sfCoach" placeholder="选填"></div>
+  <h3 id="stuMTitle">添加学员</h3>
+  <div class="fld"><label>姓名 *</label><input id="sfName"></div>
+  <div class="row"><div class="fld"><label>家长</label><input id="sfParent"></div><div class="fld"><label>电话</label><input id="sfPhone"></div></div>
+  <div class="fld"><label>教练</label><input id="sfCoach"></div>
   <div class="fld"><label>头像</label><select id="sfAvatar"><option>🧒</option><option>👦</option><option>👧</option><option>🧑</option><option>👨</option><option>👩</option><option>🏃</option><option>⛸️</option></select></div>
-  <div class="row"><div class="fld"><label>课程包</label><select id="sfPkg"><option value="custom">自定义</option><option value="10次体验包">10次体验包</option><option value="20次常规包">20次常规包</option><option value="30次进阶包">30次进阶包</option><option value="50次精英包">50次精英包</option></select></div><div class="fld"><label>数量 *</label><input id="sfTotal" type="number" placeholder="如: 20" min="1"></div></div>
-  <div class="row"><div class="fld"><label>有效期至</label><input id="sfExpiry" type="date"></div><div class="fld"><label>单价 (¥)</label><input id="sfPrice" type="number" step="0.01" placeholder="0.00"></div></div>
-  <div class="row"><div class="fld"><label>标签</label><select id="sfTag"><option value="">无</option><option value="new">🆕 新生</option><option value="renew">🔄 续费</option><option value="vip">⭐ VIP</option><option value="churn">⚠️ 流失预警</option></select></div><div class="fld"><label>已付 (¥)</label><input id="sfPaid" type="number" step="0.01" placeholder="0.00"></div></div>
-  <div class="fld"><label>备注</label><input id="sfNotes" placeholder="选填"></div>
+  <div class="row"><div class="fld"><label>课程包</label><select id="sfPkg"><option value="custom">自定义</option><option value="10次体验包">10次体验包</option><option value="20次常规包">20次常规包</option><option value="30次进阶包">30次进阶包</option><option value="50次精英包">50次精英包</option></select></div><div class="fld"><label>数量 *</label><input id="sfTotal" type="number" min="1"></div></div>
+  <div class="row"><div class="fld"><label>有效期至</label><input id="sfExpiry" type="date"></div><div class="fld"><label>单价 ¥</label><input id="sfPrice" type="number" step="0.01"></div></div>
+  <div class="row"><div class="fld"><label>标签</label><select id="sfTag"><option value="">无</option><option value="new">🆕 新生</option><option value="renew">🔄 续费</option><option value="vip">⭐ VIP</option><option value="churn">⚠️ 流失预警</option></select></div><div class="fld"><label>已付 ¥</label><input id="sfPaid" type="number" step="0.01"></div></div>
+  <div class="fld"><label>备注</label><input id="sfNotes"></div>
   <div class="btns"><button class="cancel" onclick="closeM('stuModal')">取消</button><button class="confirm" onclick="saveStudent()">保存</button></div>
 </div></div>
 <input type="hidden" id="editSid">
 
-<!-- Checkin Modal -->
 <div class="modal-bg" id="chkModal"><div class="modal">
   <h3>📋 签到</h3>
-  <div class="fld"><label>选择学员</label><select id="chkStudent"></select></div>
+  <div class="fld"><label>学员</label><select id="chkStudent"></select></div>
   <div class="fld"><label>日期</label><input id="chkDate" type="date"></div>
-  <div class="fld"><label>扣减数量</label><input id="chkUnits" type="number" value="1" min="1"></div>
-  <div class="fld"><label>备注</label><input id="chkNote" placeholder="课程内容"></div>
-  <div class="btns"><button class="cancel" onclick="closeM('chkModal')">取消</button><button class="confirm" onclick="doCheckin()">✅ 确认签到</button></div>
+  <div class="fld"><label>扣减</label><input id="chkUnits" type="number" value="1" min="1"></div>
+  <div class="fld"><label>备注</label><input id="chkNote"></div>
+  <div class="btns"><button class="cancel" onclick="closeM('chkModal')">取消</button><button class="confirm" onclick="doCheckin()">✅ 签到</button></div>
 </div></div>
 
-<!-- Batch Checkin Modal -->
 <div class="modal-bg" id="batchModal"><div class="modal">
   <h3>📋 批量签到</h3>
   <div class="fld"><label>日期</label><input id="batchDate" type="date"></div>
-  <div class="fld"><label>扣减数量</label><input id="batchUnits" type="number" value="1" min="1"></div>
-  <div class="fld"><label>备注</label><input id="batchNote" placeholder="如: 周三基础课"></div>
-  <div style="font-size:11px;color:var(--t3);margin-bottom:8px">提示：在学员列表页勾选学员后再点击这里</div>
+  <div class="fld"><label>扣减</label><input id="batchUnits" type="number" value="1" min="1"></div>
+  <div class="fld"><label>备注</label><input id="batchNote"></div>
   <div class="btns"><button class="cancel" onclick="closeM('batchModal')">取消</button><button class="confirm" onclick="doBatchCheckin()">✅ 批量签到</button></div>
 </div></div>
 
-<!-- Payment Modal -->
 <div class="modal-bg" id="payModal"><div class="modal">
   <h3>💰 新增缴费</h3>
-  <div class="fld"><label>选择学员</label><select id="payStudent"></select></div>
-  <div class="row"><div class="fld"><label>金额 *</label><input id="payAmt" type="number" step="0.01" placeholder="0.00"></div><div class="fld"><label>购买节数</label><input id="payUnits" type="number" min="1"></div></div>
+  <div class="fld"><label>学员</label><select id="payStudent"></select></div>
+  <div class="row"><div class="fld"><label>金额 *</label><input id="payAmt" type="number" step="0.01"></div><div class="fld"><label>节数</label><input id="payUnits" type="number" min="1"></div></div>
   <div class="row"><div class="fld"><label>日期</label><input id="payDate" type="date"></div><div class="fld"><label>方式</label><select id="payMtd"><option>微信</option><option>支付宝</option><option>现金</option><option>转账</option></select></div></div>
-  <div class="fld"><label>备注</label><input id="payNote" placeholder="选填"></div>
+  <div class="fld"><label>备注</label><input id="payNote"></div>
   <div class="btns"><button class="cancel" onclick="closeM('payModal')">取消</button><button class="confirm" onclick="savePayment()">保存</button></div>
 </div></div>
 
-<!-- Admin Modal -->
 <div class="modal-bg" id="admModal"><div class="modal">
   <h3>🔑 管理员登录</h3>
-  <div class="fld"><label>密码</label><input id="admPw" type="password" placeholder="输入管理员密码"></div>
+  <div class="fld"><label>密码</label><input id="admPw" type="password"></div>
   <div class="btns"><button class="cancel" onclick="closeM('admModal')">取消</button><button class="confirm" onclick="doAdminLogin()">登录</button></div>
 </div></div>
 
 <script>
 // ===== SUPABASE =====
-var SU='https://hndguaogudhribyimyrg.supabase.co';
-var SK='sb_publishable_ZDRzwrdUVmLKqo-Yht-03w_zy6u9iWP';
-var sb=null,sbOk=false;
-(function(){
-  if(window.__sbLoadFailed)return;
-  try{sb=window.supabase.createClient(SU,SK);sbOk=true}catch(e){}
-})();
+var SU='https://hndguaogudhribyimyrg.supabase.co',SK='sb_publishable_ZDRzwrdUVmLKqo-Yht-03w_zy6u9iWP',sb=null,sbOk=false;
+(function(){if(window.__sbLoadFailed)return;try{sb=window.supabase.createClient(SU,SK);sbOk=true}catch(e){}})();
 
-// ===== GLOBAL STATE =====
-var tc='',isAdm=false,role='',curTab='dash';
-var students=[],attendance=[],payments=[],batchSel=[],calBase=new Date();
-calBase.setDate(calBase.getDate()-calBase.getDay()+1); // Monday
+// ===== STATE =====
+var tc='',isAdm=false,curTab='dash',students=[],attendance=[],payments=[],batchSel=[],calBase=new Date();
+calBase.setDate(calBase.getDate()-calBase.getDay()+1);
 
 // ===== UTILS =====
 function eh(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function fm(n){return parseFloat(n||0).toFixed(2)}
 function dt(d){return new Date(d).toISOString().slice(0,10)}
 function d2s(d){return d.toISOString().slice(0,10)}
-var _tt;
-function ts(msg){var e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){e.classList.remove('show')},1800)}
+var _tt;function ts(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){e.classList.remove('show')},1800)}
 function closeM(id){document.getElementById(id).classList.remove('show')}
 function openM(id){document.getElementById(id).classList.add('show')}
-
 async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
 
-// ===== AUTH =====
+// ===== LANDING =====
 function openLandingModal(){document.getElementById('landingModal').classList.add('show');setTimeout(function(){document.getElementById('tcInput').focus()},300)}
 function closeLandingModal(){document.getElementById('landingModal').classList.remove('show')}
+
+// ===== AUTH =====
 function init(){
-  // 版本检测：清除旧缓存，强制显示 landing
   var ver=localStorage.getItem('cc_ver');
   if(ver!=='v3'){localStorage.clear();localStorage.setItem('cc_ver','v3')}
   tc=localStorage.getItem('cc_tc')||'';
-  role=localStorage.getItem('cc_r')||'';
-  isAdm=role==='boss';
+  isAdm=localStorage.getItem('cc_r')==='boss';
   if(tc){
     document.getElementById('landingPage').classList.add('out');
     setTimeout(function(){document.getElementById('landingPage').style.display='none'},800);
@@ -357,48 +303,36 @@ function init(){
 async function joinTeam(){
   var c=document.getElementById('tcInput').value.trim().toUpperCase();
   if(!c){ts('请输入团队码');return}
-  tc=c;role='';isAdm=false;
-  localStorage.setItem('cc_tc',tc);localStorage.removeItem('cc_r');
+  tc=c;isAdm=false;localStorage.setItem('cc_tc',tc);localStorage.removeItem('cc_r');
   closeLandingModal();
-  // Fetch club profile
-  if(sb&&sbOk){
-    var r=await sb.from('team_profiles').select('coach_name').eq('team_code',tc).maybeSingle();
-    if(r.data&&r.data.coach_name){
-      document.getElementById('clubNameText').textContent=r.data.coach_name;
-      document.getElementById('clubName').classList.add('show');
-    }
-  }
+  if(sb&&sbOk){var r=await sb.from('team_profiles').select('coach_name').eq('team_code',tc).maybeSingle();if(r.data&&r.data.coach_name){document.getElementById('clubNameText').textContent=r.data.coach_name;document.getElementById('clubName').classList.add('show')}}
   document.getElementById('landingPage').classList.add('out');
   setTimeout(function(){document.getElementById('landingPage').style.display='none';enter()},600);
 }
 function logoutTeam(){
-  tc='';role='';isAdm=false;
-  localStorage.removeItem('cc_tc');localStorage.removeItem('cc_r');
-  document.getElementById('main').classList.add('hidden');
+  tc='';isAdm=false;localStorage.removeItem('cc_tc');localStorage.removeItem('cc_r');
+  document.getElementById('appMain').classList.add('hidden');
   document.getElementById('fabBtn').classList.add('hidden');
   document.getElementById('tmDisp').textContent='未加入';
   document.getElementById('clubName').classList.remove('show');
-  document.getElementById('landingPage').style.display='flex';
   document.getElementById('landingPage').classList.remove('out');
+  document.getElementById('landingPage').style.display='flex';
 }
 function enter(){
-  document.getElementById('main').classList.remove('hidden');
+  document.getElementById('appMain').classList.remove('hidden');
   document.getElementById('fabBtn').classList.remove('hidden');
-  document.getElementById('tmDisp').textContent=isAdm?'ALL TEAMS':tc;
+  document.getElementById('tmDisp').textContent=isAdm?'ALL':tc;
   document.getElementById('rC').classList.toggle('on',isAdm);
   document.getElementById('rB').classList.toggle('on',isAdm);
-  document.getElementById('rP').classList.toggle('on',!isAdm);
   loadAll();
 }
 function showAdminLogin(){openM('admModal');setTimeout(function(){document.getElementById('admPw').focus()},200)}
 async function doAdminLogin(){
-  var pw=document.getElementById('admPw').value;
-  if(!pw){ts('请输入密码');return}
+  var pw=document.getElementById('admPw').value;if(!pw){ts('请输入密码');return}
   if(await s256(pw)==='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33'){
-    isAdm=true;role='boss';localStorage.setItem('cc_r','boss');
-    closeM('admModal');document.getElementById('admPw').value='';
-    if(!tc){tc='ADMIN'} enter();ts('🔑 管理员已登录');
-  }else{ts('❌ 密码错误');document.getElementById('admPw').value=''}
+    isAdm=true;localStorage.setItem('cc_r','boss');closeM('admModal');document.getElementById('admPw').value='';
+    if(!tc){tc='ADMIN'}enter();ts('🔑 管理员已登录');
+  }else{ts('密码错误');document.getElementById('admPw').value=''}
 }
 
 // ===== TABS =====
@@ -414,339 +348,125 @@ function switchTab(t){
 }
 
 // ===== DATA =====
-function loadAll(){
-  if(!sb||!sbOk){setTimeout(loadAll,800);return}
-  loadStudents();
-  loadAttendance();
-  loadPayments();
-}
-async function loadStudents(){
-  var q=sb.from('students').select('*').order('created_at',{ascending:false});
-  if(!isAdm) q=q.eq('team_code',tc);
-  var r=await q;if(!r.error) students=r.data||[];
-  updateCoachFilter();
-  if(curTab==='stu') renderStudents();
-  if(curTab==='dash'){renderStats();renderRenew()}
-  if(curTab==='cal') renderCalendar();
-}
-async function loadAttendance(){
-  var q=sb.from('attendance').select('*').order('class_date',{ascending:false}).limit(200);
-  if(!isAdm) q=q.eq('team_code',tc);
-  var r=await q;if(!r.error) attendance=r.data||[];
-  if(curTab==='dash') renderToday();
-  if(curTab==='rpt') renderReports();
-}
-async function loadPayments(){
-  var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);
-  if(!isAdm) q=q.eq('team_code',tc);
-  var r=await q;if(!r.error) payments=r.data||[];
-  if(curTab==='pay') renderPayments();
-  if(curTab==='rpt') renderReports();
-}
-
-function updateCoachFilter(){
-  var coaches=new Set();
-  students.forEach(function(s){if(s.coach) coaches.add(s.coach)});
-  var sel=document.getElementById('coachFilter');
-  sel.innerHTML='<option value="all">全部教练</option>';
-  coaches.forEach(function(c){sel.innerHTML+='<option value="'+eh(c)+'">'+eh(c)+'</option>'});
-}
+function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments()}
+async function loadStudents(){var q=sb.from('students').select('*').order('created_at',{ascending:false});if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)students=r.data||[];updateCoachFilter();if(curTab==='stu')renderStudents();if(curTab==='dash'){renderStats();renderRenew()}}
+async function loadAttendance(){var q=sb.from('attendance').select('*').order('class_date',{ascending:false}).limit(200);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)attendance=r.data||[];if(curTab==='dash')renderToday();if(curTab==='rpt')renderReports()}
+async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
+function updateCoachFilter(){var cs=new Set();students.forEach(function(s){if(s.coach)cs.add(s.coach)});var sel=document.getElementById('coachFilter');sel.innerHTML='<option value="all">全部教练</option>';cs.forEach(function(c){sel.innerHTML+='<option>'+eh(c)+'</option>'})}
 
 // ===== STUDENTS =====
 function renderStudents(){
-  var search=(document.getElementById('stuSearch').value||'').toLowerCase();
-  var fil=document.getElementById('stuFilter').value;
-  var cfil=document.getElementById('coachFilter').value;
-  var list=students.filter(function(s){
-    if(search&&s.name.toLowerCase().indexOf(search)<0&&(s.parent_phone||'').indexOf(search)<0)return false;
-    var rem=s.total_units-s.used_units;
-    if(fil==='active'&&s.status!=='active')return false;
-    if(fil==='low'&&rem>3)return false;
-    if(fil==='zero'&&rem>0)return false;
-    if(cfil!=='all'&&s.coach!==cfil)return false;
-    return true;
-  });
-  var el=document.getElementById('stuGrid');
-  if(!list.length){el.innerHTML='<div class="empty" style="grid-column:span 2">暂无学员</div>';return}
-  var html='';
-  list.forEach(function(s){
-    var rem=s.total_units-s.used_units;
-    var rc=rem<=0?'r':rem<=3?'o':'g';
-    var tags=[];
-    if(s.tag==='new') tags.push('<span class="tag new">新生</span>');
-    if(s.tag==='renew') tags.push('<span class="tag renew">续费</span>');
-    if(s.tag==='vip') tags.push('<span class="tag vip">VIP</span>');
-    if(s.tag==='churn') tags.push('<span class="tag churn">流失预警</span>');
-    var inBatch=batchSel.indexOf(s.id)>=0;
-    html+='<div class="stu-card" onclick="toggleBatch(\''+s.id+'\')">';
-    html+='<div class="sbatch'+(inBatch?' ck':'')+'">✓</div>';
-    html+='<div class="avatar">'+eh(s.avatar||'🧒')+'</div>';
-    html+='<div class="sname">'+eh(s.name)+'</div>';
-    html+='<div class="smeta">'+(s.package_name||'')+' · '+eh(s.coach||'')+'</div>';
-    if(tags.length) html+='<div class="tags">'+tags.join('')+'</div>';
-    html+='<div class="sremain '+rc+'">'+rem+'</div>';
-    html+='</div>';
-  });
-  el.innerHTML=html;
-  document.getElementById('batchBar').classList.toggle('show',batchSel.length>0);
-  document.getElementById('batchCnt').textContent=batchSel.length;
+  var srch=(document.getElementById('stuSearch').value||'').toLowerCase(),fil=document.getElementById('stuFilter').value,cfil=document.getElementById('coachFilter').value;
+  var list=students.filter(function(s){if(srch&&s.name.toLowerCase().indexOf(srch)<0&&(s.parent_phone||'').indexOf(srch)<0)return false;var r=s.total_units-s.used_units;if(fil==='active'&&s.status!=='active')return false;if(fil==='low'&&r>3)return false;if(fil==='zero'&&r>0)return false;if(cfil!=='all'&&s.coach!==cfil)return false;return true});
+  var el=document.getElementById('stuGrid');if(!list.length){el.innerHTML='<div class="empty" style="grid-column:span 2">暂无学员</div>';return}
+  var h='';list.forEach(function(s){var r=s.total_units-s.used_units,rc=r<=0?'r':r<=3?'o':'g',tags=[];
+    if(s.tag==='new')tags.push('<span class="tag new">新生</span>');if(s.tag==='renew')tags.push('<span class="tag renew">续费</span>');
+    if(s.tag==='vip')tags.push('<span class="tag vip">VIP</span>');if(s.tag==='churn')tags.push('<span class="tag churn">预警</span>');
+    var bk=batchSel.indexOf(s.id)>=0;
+    h+='<div class="stu-card" onclick="toggleBatch(\''+s.id+'\')"><div class="sbatch'+(bk?' ck':'')+'">✓</div><div class="avatar">'+eh(s.avatar||'🧒')+'</div><div class="sname">'+eh(s.name)+'</div><div class="smeta">'+(s.package_name||'')+' · '+eh(s.coach||'')+'</div>'+(tags.length?'<div class="tags">'+tags.join('')+'</div>':'')+'<div class="sremain '+rc+'">'+r+'</div></div>';
+  });el.innerHTML=h;
+  document.getElementById('batchBar').classList.toggle('show',batchSel.length>0);document.getElementById('batchCnt').textContent=batchSel.length;
 }
-function toggleBatch(id){
-  var idx=batchSel.indexOf(id);
-  if(idx>=0) batchSel.splice(idx,1); else batchSel.push(id);
-  renderStudents();
-}
+function toggleBatch(id){var i=batchSel.indexOf(id);if(i>=0)batchSel.splice(i,1);else batchSel.push(id);renderStudents()}
 function clearBatch(){batchSel=[];renderStudents()}
-
 function showAddStudent(id){
-  document.getElementById('stuModalTitle').textContent=id?'编辑学员':'添加学员';
-  document.getElementById('editSid').value=id||'';
+  document.getElementById('stuMTitle').textContent=id?'编辑学员':'添加学员';document.getElementById('editSid').value=id||'';
   ['sfName','sfParent','sfPhone','sfCoach','sfTotal','sfPrice','sfPaid','sfNotes'].forEach(function(f){document.getElementById(f).value=''});
-  document.getElementById('sfPkg').value='custom';document.getElementById('sfExpiry').value='';
-  document.getElementById('sfAvatar').value='🧒';document.getElementById('sfTag').value='';
-  if(id){
-    var s=students.find(function(x){return x.id===id});
-    if(s){
-      document.getElementById('sfName').value=s.name||'';document.getElementById('sfParent').value=s.parent_name||'';
-      document.getElementById('sfPhone').value=s.parent_phone||'';document.getElementById('sfCoach').value=s.coach||'';
-      document.getElementById('sfAvatar').value=s.avatar||'🧒';document.getElementById('sfTag').value=s.tag||'';
-      document.getElementById('sfTotal').value=s.total_units||'';document.getElementById('sfPrice').value=s.unit_price||'';
-      document.getElementById('sfPaid').value=s.total_paid||'';document.getElementById('sfNotes').value=s.notes||'';
-      document.getElementById('sfExpiry').value=s.expiry_date||'';
-      document.getElementById('sfPkg').value=s.package_name||'custom';
-    }
-  }
-  openM('stuModal');
+  document.getElementById('sfPkg').value='custom';document.getElementById('sfExpiry').value='';document.getElementById('sfAvatar').value='🧒';document.getElementById('sfTag').value='';
+  if(id){var s=students.find(function(x){return x.id===id});if(s){
+    document.getElementById('sfName').value=s.name||'';document.getElementById('sfParent').value=s.parent_name||'';document.getElementById('sfPhone').value=s.parent_phone||'';
+    document.getElementById('sfCoach').value=s.coach||'';document.getElementById('sfAvatar').value=s.avatar||'🧒';document.getElementById('sfTag').value=s.tag||'';
+    document.getElementById('sfTotal').value=s.total_units||'';document.getElementById('sfPrice').value=s.unit_price||'';document.getElementById('sfPaid').value=s.total_paid||'';
+    document.getElementById('sfNotes').value=s.notes||'';document.getElementById('sfExpiry').value=s.expiry_date||'';document.getElementById('sfPkg').value=s.package_name||'custom';
+  }}openM('stuModal');
 }
 async function saveStudent(){
   var id=document.getElementById('editSid').value;
-  var data={
-    team_code:tc, name:document.getElementById('sfName').value.trim(),
-    parent_name:document.getElementById('sfParent').value.trim(),
-    parent_phone:document.getElementById('sfPhone').value.trim(),
-    coach:document.getElementById('sfCoach').value.trim(),
-    avatar:document.getElementById('sfAvatar').value,
-    package_name:document.getElementById('sfPkg').value,
-    total_units:parseInt(document.getElementById('sfTotal').value)||0,
-    expiry_date:document.getElementById('sfExpiry').value||null,
-    unit_price:parseFloat(document.getElementById('sfPrice').value)||0,
-    total_paid:parseFloat(document.getElementById('sfPaid').value)||0,
-    tag:document.getElementById('sfTag').value,
-    notes:document.getElementById('sfNotes').value.trim(), status:'active'
-  };
-  if(!data.name){ts('请输入姓名');return}
-  if(!data.total_units){ts('请输入数量');return}
-  if(id){
-    var r=await sb.from('students').update(data).eq('id',id);
-    if(r.error){ts('保存失败');return}
-  }else{
-    data.used_units=0;
-    var r=await sb.from('students').insert(data);
-    if(r.error){ts('添加失败');return}
-  }
+  var d={team_code:tc,name:document.getElementById('sfName').value.trim(),parent_name:document.getElementById('sfParent').value.trim(),parent_phone:document.getElementById('sfPhone').value.trim(),coach:document.getElementById('sfCoach').value.trim(),avatar:document.getElementById('sfAvatar').value,package_name:document.getElementById('sfPkg').value,total_units:parseInt(document.getElementById('sfTotal').value)||0,expiry_date:document.getElementById('sfExpiry').value||null,unit_price:parseFloat(document.getElementById('sfPrice').value)||0,total_paid:parseFloat(document.getElementById('sfPaid').value)||0,tag:document.getElementById('sfTag').value,notes:document.getElementById('sfNotes').value.trim(),status:'active'};
+  if(!d.name){ts('请输入姓名');return}if(!d.total_units){ts('请输入数量');return}
+  if(id){var r=await sb.from('students').update(d).eq('id',id);if(r.error){ts('保存失败');return}}else{d.used_units=0;var r=await sb.from('students').insert(d);if(r.error){ts('添加失败');return}}
   closeM('stuModal');loadStudents();ts(id?'已更新':'已添加');
 }
 
 // ===== CHECKIN =====
-function showCheckin(sid){
-  var sel=document.getElementById('chkStudent');
-  sel.innerHTML='<option value="">请选择</option>';
-  students.filter(function(s){return s.status==='active'}).forEach(function(s){
-    sel.innerHTML+='<option value="'+s.id+'"'+(s.id===sid?' selected':'')+'>'+eh(s.name)+'（剩'+(s.total_units-s.used_units)+'节）</option>';
-  });
-  document.getElementById('chkDate').value=dt(new Date());
-  document.getElementById('chkUnits').value='1';document.getElementById('chkNote').value='';
-  openM('chkModal');
-}
-function showBatchCheckin(){
-  if(batchSel.length===0){ts('请先在学员页勾选学员');switchTab('stu');return}
-  document.getElementById('batchDate').value=dt(new Date());
-  document.getElementById('batchUnits').value='1';document.getElementById('batchNote').value='';
-  openM('batchModal');
-}
-async function doCheckin(){
-  var sid=document.getElementById('chkStudent').value;
-  var units=parseInt(document.getElementById('chkUnits').value)||1;
-  var date=document.getElementById('chkDate').value||dt(new Date());
-  var note=document.getElementById('chkNote').value.trim();
-  if(!sid){ts('请选择学员');return}
-  var s=students.find(function(x){return x.id===sid});if(!s)return;
-  if(s.total_units-s.used_units<units){ts('剩余课时不足');return}
-  var r=await sb.from('attendance').insert({team_code:tc,student_id:sid,class_date:date,units_deducted:units,notes:note});
-  if(r.error){ts('签到失败');return}
-  await sb.from('students').update({used_units:s.used_units+units}).eq('id',sid);
-  closeM('chkModal');loadStudents();loadAttendance();ts('✅ '+eh(s.name)+' -'+units+'节');
-}
+function showBatchCheckin(){if(batchSel.length===0){ts('请先在学员页勾选学员');switchTab('stu');return}document.getElementById('batchDate').value=dt(new Date());document.getElementById('batchUnits').value='1';document.getElementById('batchNote').value='';openM('batchModal')}
 async function doBatchCheckin(){
   if(batchSel.length===0){ts('请先勾选学员');return}
-  var units=parseInt(document.getElementById('batchUnits').value)||1;
-  var date=document.getElementById('batchDate').value||dt(new Date());
-  var note=document.getElementById('batchNote').value.trim();
-  var ok=0,fail=0;
-  for(var i=0;i<batchSel.length;i++){
-    var s=students.find(function(x){return x.id===batchSel[i]});if(!s)continue;
-    if(s.total_units-s.used_units<units){fail++;continue}
+  var units=parseInt(document.getElementById('batchUnits').value)||1,date=document.getElementById('batchDate').value||dt(new Date()),note=document.getElementById('batchNote').value.trim(),ok=0,fail=0;
+  for(var i=0;i<batchSel.length;i++){var s=students.find(function(x){return x.id===batchSel[i]});if(!s)continue;if(s.total_units-s.used_units<units){fail++;continue}
     var r=await sb.from('attendance').insert({team_code:tc,student_id:s.id,class_date:date,units_deducted:units,notes:note});
-    if(!r.error){await sb.from('students').update({used_units:s.used_units+units}).eq('id',s.id);ok++}else{fail++}
-  }
-  closeM('batchModal');clearBatch();loadStudents();loadAttendance();
-  ts('✅ 成功'+ok+'人'+(fail>0?'，失败'+fail+'人':''));
+    if(!r.error){await sb.from('students').update({used_units:s.used_units+units}).eq('id',s.id);ok++}else{fail++}}
+  closeM('batchModal');clearBatch();loadStudents();loadAttendance();ts('✅ '+ok+'人'+(fail>0?'，失败'+fail+'人':''));
 }
 
 // ===== CALENDAR =====
 function renderCalendar(){
-  var monday=new Date(calBase);
-  var days=[];
-  for(var i=0;i<7;i++){var d=new Date(monday);d.setDate(d.getDate()+i);days.push(d)}
+  var mon=new Date(calBase),days=[],today=dt(new Date()),sel=dt(calBase);
+  for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
   document.getElementById('calRange').textContent=d2s(days[0])+' ~ '+d2s(days[6]);
-  var today=d2s(new Date());
-  var sel=d2s(new Date(calBase));
-  // Build attendance map for this week
-  var attMap={};
-  attendance.forEach(function(a){attMap[a.class_date]=attMap[a.class_date]||[];attMap[a.class_date].push(a.student_id)});
-  var dayNames=['一','二','三','四','五','六','日'];
-  var html='';
-  for(var i=1;i<=7;i++) html+='<div class="day-hd">周'+dayNames[i-1]+'</div>';
-  for(var i=0;i<7;i++){
-    var d=days[i],key=d2s(d);
-    var cls=today===key?'today':'';if(key===sel) cls+=' sel';
-    var hasClass=attMap[key]&&attMap[key].length>0?' has-class':'';
-    html+='<div class="day'+cls+hasClass+'" onclick="calPick(\''+key+'\')">';
-    html+=d.getDate();
-    if(attMap[key]&&attMap[key].length) html+='<div class="dot"></div>';
-    html+='</div>';
-  }
-  document.getElementById('calGrid').innerHTML=html;
-  calPick(sel);
+  var attMap={};attendance.forEach(function(a){attMap[a.class_date]=attMap[a.class_date]||[];attMap[a.class_date].push(a.student_id)});
+  var h='',dn=['一','二','三','四','五','六','日'];for(var i=1;i<=7;i++)h+='<div class="day-hd">周'+dn[i-1]+'</div>';
+  for(var i=0;i<7;i++){var k=d2s(days[i]),cls=today===k?'today':'',ac=attMap[k]&&attMap[k].length>0?' has-class':'';if(k===sel)cls+=' sel';
+    h+='<div class="day'+cls+ac+'" onclick="calPick(\''+k+'\')">'+days[i].getDate()+(attMap[k]&&attMap[k].length?'<div class="dot"></div>':'')+'</div>'}
+  document.getElementById('calGrid').innerHTML=h;calPick(sel);
 }
 function calShift(n){calBase.setDate(calBase.getDate()+n);renderCalendar()}
 function calPick(date){
-  document.getElementById('calDayLabel').textContent=date+' 签到情况';
-  var todayAtt=attendance.filter(function(a){return a.class_date===date});
-  var el=document.getElementById('calDayClasses');
-  if(!todayAtt.length){el.innerHTML='<div class="empty">该日无签到</div>';return}
-  var html='';
-  todayAtt.forEach(function(a){
-    var s=students.find(function(x){return x.id===a.student_id});
-    html+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+eh(a.notes||'')+'</div></div><div class="delta down">-'+a.units_deducted+'节</div></div>';
-  });
-  el.innerHTML=html;
-  // Update day selection
-  document.getElementById('calDayLabel').textContent=date+' 签到情况';
-  renderCalendar(); // refresh selection
+  document.getElementById('calDayLabel').textContent=date;
+  var ta=attendance.filter(function(a){return a.class_date===date}),el=document.getElementById('calDayClasses');
+  if(!ta.length){el.innerHTML='<div class="empty">该日无签到</div>';return}
+  var h='';ta.forEach(function(a){var s=students.find(function(x){return x.id===a.student_id});
+    h+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+eh(a.notes||'')+'</div></div><div class="delta down">-'+a.units_deducted+'节</div></div>'});el.innerHTML=h;
 }
 
 // ===== DASHBOARD =====
 function renderStats(){
-  var active=students.filter(function(s){return s.status==='active'}).length;
-  var low=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=3&&(s.total_units-s.used_units)>0}).length;
-  var zero=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=0}).length;
-  var today=attendance.filter(function(a){return a.class_date===dt(new Date())}).length;
-  document.getElementById('stats').innerHTML=
-    '<div class="sc"><div class="n g">'+active+'</div><div class="l">在读</div></div>'+
-    '<div class="sc"><div class="n b">'+today+'</div><div class="l">今日签到</div></div>'+
-    '<div class="sc"><div class="n o">'+low+'</div><div class="l">需续费</div></div>'+
-    '<div class="sc"><div class="n r">'+zero+'</div><div class="l">已用完</div></div>';
+  var a=students.filter(function(s){return s.status==='active'}).length,l=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=3&&(s.total_units-s.used_units)>0}).length,z=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=0}).length,t=attendance.filter(function(a){return a.class_date===dt(new Date())}).length;
+  document.getElementById('stats').innerHTML='<div class="sc"><div class="n g">'+a+'</div><div class="l">在读</div></div><div class="sc"><div class="n b">'+t+'</div><div class="l">今日签到</div></div><div class="sc"><div class="n o">'+l+'</div><div class="l">需续费</div></div><div class="sc"><div class="n r">'+z+'</div><div class="l">已用完</div></div>';
 }
 function renderToday(){
-  var td=dt(new Date());
-  var todayAtt=attendance.filter(function(a){return a.class_date===td});
-  var el=document.getElementById('todayPanel');
-  if(!todayAtt.length){el.innerHTML='<div class="empty">今日暂无签到</div>';return}
-  var html='';
-  todayAtt.forEach(function(a){
-    var s=students.find(function(x){return x.id===a.student_id});
-    html+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+a.class_date+'</div></div><div class="delta down">-'+a.units_deducted+'节</div></div>';
-  });
-  el.innerHTML=html;
+  var td=dt(new Date()),ta=attendance.filter(function(a){return a.class_date===td}),el=document.getElementById('todayPanel');
+  if(!ta.length){el.innerHTML='<div class="empty">今日暂无签到</div>';return}
+  var h='';ta.forEach(function(a){var s=students.find(function(x){return x.id===a.student_id});h+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+a.class_date+'</div></div><div class="delta down">-'+a.units_deducted+'节</div></div>'});el.innerHTML=h;
 }
 function renderRenew(){
-  var renew=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=3&&(s.total_units-s.used_units)>0});
-  var el=document.getElementById('renewPanel');
-  if(!renew.length){el.innerHTML='<div class="empty">🎉 所有学员课时充足</div>';return}
-  var html='';
-  renew.forEach(function(s){
-    html+='<div class="hist-item" onclick="showAddStudent(\''+s.id+'\')" style="cursor:pointer"><div class="avatar-sm">'+eh(s.avatar||'🧒')+'</div><div class="info"><div class="n">'+eh(s.name)+'</div><div class="m">剩'+(s.total_units-s.used_units)+'节 · '+eh(s.parent_phone||'')+'</div></div><div class="delta down">剩余'+(s.total_units-s.used_units)+'</div></div>';
-  });
-  el.innerHTML=html;
+  var rn=students.filter(function(s){return s.status==='active'&&(s.total_units-s.used_units)<=3&&(s.total_units-s.used_units)>0}),el=document.getElementById('renewPanel');
+  if(!rn.length){el.innerHTML='<div class="empty">🎉 所有学员课时充足</div>';return}
+  var h='';rn.forEach(function(s){h+='<div class="hist-item" onclick="showAddStudent(\''+s.id+'\')" style="cursor:pointer"><div class="avatar-sm">'+eh(s.avatar||'🧒')+'</div><div class="info"><div class="n">'+eh(s.name)+'</div><div class="m">剩'+(s.total_units-s.used_units)+'节</div></div><div class="delta down">'+(s.total_units-s.used_units)+'</div></div>'});el.innerHTML=h;
 }
 
 // ===== PAYMENTS =====
-function renderPayments(){
-  var el=document.getElementById('payList');
-  if(!payments.length){el.innerHTML='<div class="empty">暂无缴费记录</div>';return}
-  // Group by date
-  var groups={};
-  payments.forEach(function(p){var k=p.payment_date||'未知';if(!groups[k]) groups[k]=[];groups[k].push(p)});
-  var keys=Object.keys(groups).sort().reverse();
-  var html='';
-  keys.forEach(function(k){
-    html+='<div class="card" style="margin-bottom:6px"><h3>📅 '+k+' <span style="font-size:10px;color:var(--t3);font-weight:400">共 ¥'+fm(groups[k].reduce(function(s,p){return s+(p.amount||0)},0))+'</span></h3>';
-    groups[k].forEach(function(p){
-      var s=students.find(function(x){return x.id===p.student_id});
-      html+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+eh(p.payment_method||'')+(p.units_purchased?' · +'+p.units_purchased+'节':'')+'</div></div><div class="delta up">+¥'+fm(p.amount||0)+'</div></div>';
-    });
-    html+='</div>';
-  });
-  el.innerHTML=html;
+function renderPayments(){var el=document.getElementById('payList');if(!payments.length){el.innerHTML='<div class="empty">暂无记录</div>';return}
+  var g={};payments.forEach(function(p){var k=p.payment_date||'?';if(!g[k])g[k]=[];g[k].push(p)});
+  var h='';Object.keys(g).sort().reverse().forEach(function(k){h+='<div class="card" style="margin-bottom:6px"><h3>📅 '+k+' <span style="font-size:10px;color:var(--t3);font-weight:400">¥'+fm(g[k].reduce(function(s,p){return s+(p.amount||0)},0))+'</span></h3>';
+    g[k].forEach(function(p){var s=students.find(function(x){return x.id===p.student_id});h+='<div class="hist-item"><div class="avatar-sm">'+eh((s&&s.avatar)||'🧒')+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">'+eh(p.payment_method||'')+(p.units_purchased?' · +'+p.units_purchased+'节':'')+'</div></div><div class="delta up">+¥'+fm(p.amount||0)+'</div></div>'});h+='</div>'});el.innerHTML=h;
 }
-function showPayment(){
-  var sel=document.getElementById('payStudent');
-  sel.innerHTML='<option value="">请选择</option>';
-  students.forEach(function(s){sel.innerHTML+='<option value="'+s.id+'">'+eh(s.name)+'</option>'});
-  document.getElementById('payAmt').value='';document.getElementById('payUnits').value='';
-  document.getElementById('payDate').value=dt(new Date());document.getElementById('payMtd').value='微信';
-  document.getElementById('payNote').value='';
-  openM('payModal');
-}
+function showPayment(){var sel=document.getElementById('payStudent');sel.innerHTML='<option value="">请选择</option>';students.forEach(function(s){sel.innerHTML+='<option value="'+s.id+'">'+eh(s.name)+'</option>'});document.getElementById('payAmt').value='';document.getElementById('payUnits').value='';document.getElementById('payDate').value=dt(new Date());document.getElementById('payMtd').value='微信';document.getElementById('payNote').value='';openM('payModal')}
 async function savePayment(){
-  var sid=document.getElementById('payStudent').value;
-  var amt=parseFloat(document.getElementById('payAmt').value)||0;
-  var units=parseInt(document.getElementById('payUnits').value)||0;
-  var date=document.getElementById('payDate').value;
-  var mtd=document.getElementById('payMtd').value;
-  var note=document.getElementById('payNote').value.trim();
+  var sid=document.getElementById('payStudent').value,amt=parseFloat(document.getElementById('payAmt').value)||0,units=parseInt(document.getElementById('payUnits').value)||0,date=document.getElementById('payDate').value,mtd=document.getElementById('payMtd').value,note=document.getElementById('payNote').value.trim();
   if(!sid||!amt){ts('请选择学员并填写金额');return}
-  var r=await sb.from('payments').insert({team_code:tc,student_id:sid,amount:amt,payment_date:date,payment_method:mtd,units_purchased:units,notes:note});
-  if(r.error){ts('保存失败');return}
-  if(units>0){
-    var s=students.find(function(x){return x.id===sid});
-    if(s){await sb.from('students').update({total_units:(s.total_units||0)+units,total_paid:(s.total_paid||0)+amt}).eq('id',sid)}
-  }
-  closeM('payModal');loadStudents();loadPayments();ts('💰 缴费已记录');
+  var r=await sb.from('payments').insert({team_code:tc,student_id:sid,amount:amt,payment_date:date,payment_method:mtd,units_purchased:units,notes:note});if(r.error){ts('保存失败');return}
+  if(units>0){var s=students.find(function(x){return x.id===sid});if(s){await sb.from('students').update({total_units:(s.total_units||0)+units,total_paid:(s.total_paid||0)+amt}).eq('id',sid)}}
+  closeM('payModal');loadStudents();loadPayments();ts('💰 已记录');
 }
 
 // ===== REPORTS =====
 function renderReports(){
-  var now=new Date(),cm=now.getMonth(),cy=now.getFullYear();
-  // Monthly consumption by day
-  var consMap={},incMap={},stuMap={};
-  for(var i=1;i<=31;i++){var d=i<10?'0'+i:''+i;consMap[cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+d]=0;incMap[cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+d]=0}
-  attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consMap[k]=(consMap[k]||0)+(a.units_deducted||0);stuMap[a.student_id]=(stuMap[a.student_id]||0)+(a.units_deducted||0)}});
-  payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))) incMap[k]=(incMap[k]||0)+(p.amount||0)});
-  var maxCons=Math.max.apply(null,Object.values(consMap))||1;
-  var maxInc=Math.max.apply(null,Object.values(incMap))||1;
-  // Consumption chart
-  var chtml='';
-  Object.keys(consMap).sort().forEach(function(k){var v=consMap[k]||0;chtml+='<div class="col"><div class="bar" style="height:'+(v/maxCons*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});
-  document.getElementById('consumptionChart').innerHTML=chtml||'<div class="empty">本月无数据</div>';
-  // Income chart
-  var ihtml='';
-  Object.keys(incMap).sort().forEach(function(k){var v=incMap[k]||0;ihtml+='<div class="col"><div class="bar income" style="height:'+(v/maxInc*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});
-  document.getElementById('incomeChart').innerHTML=ihtml||'<div class="empty">本月无数据</div>';
-  // Student ranking
-  var ranked=Object.entries(stuMap).sort(function(a,b){return b[1]-a[1]}).slice(0,10);
-  var rhtml='';
-  ranked.forEach(function(e,i){
-    var s=students.find(function(x){return x.id===e[0]});
-    rhtml+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'未知')+'</div><div class="m">本月消课</div></div><div class="delta down">'+e[1]+'节</div></div>';
-  });
-  document.getElementById('rankPanel').innerHTML=rhtml||'<div class="empty">暂无数据</div>';
+  var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};
+  for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}
+  attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});
+  payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});
+  var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;
+  var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}
+  document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';
+  var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});
+  document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';
+  var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';
+  rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div><div class="m">本月</div></div><div class="delta down">'+e[1]+'节</div></div>'});
+  document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>';
 }
 
-// ===== INIT =====
 init();
-if(tc) enter();
 </script>
 </body>
 </html>
