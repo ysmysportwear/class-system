@@ -202,7 +202,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   </div>
 
   <div id="tab-dash"><div class="stats" id="stats"></div><div class="act-bar"><button class="primary" onclick="showBatchCheckin()">📋 批量签到</button><button onclick="showAddStudent()">➕ 添加学员</button></div><div class="card" id="todaySched" style="display:none"><h3>📅 今日课程</h3><div id="tsp"></div></div><div class="card"><h3>🕐 今日签到</h3><div id="todayPanel"></div></div><div class="card"><h3>⚠️ 需续费学员</h3><div id="renewPanel"></div></div></div>
-  <div id="tab-cal" class="hidden"><div class="cal-header"><button class="nav-btn" onclick="calShift(-7)">◀</button><span class="wk" id="calRange"></span><button class="nav-btn" onclick="calShift(7)">▶</button></div><div class="tt-grid" id="ttGrid"></div></div>
+  <div id="tab-cal" class="hidden"><div class="cal-header"><button class="nav-btn" onclick="calShift(-7)">◀</button><span class="wk" id="calRange"></span><button class="nav-btn" onclick="calShift(7)">▶</button></div><div class="tt-wrap"><div class="tt-grid" id="ttGrid"></div></div></div>
   <div id="tab-stu" class="hidden"><div class="sf-row"><input id="stuSearch" placeholder="搜索学员..." oninput="renderStudents()"><select id="stuFilter" onchange="renderStudents()"><option value="all">全部</option><option value="active">在读</option><option value="low">课时≤3</option><option value="zero">已用完</option></select><select id="coachFilter" onchange="renderStudents()"><option value="all">全部教练</option></select></div><div id="stuGrid"></div><div class="batch-bar" id="batchBar" onclick="doBatchCheckin()">✅ 批量签到 (<span id="batchCnt">0</span>)</div></div>
   <div id="tab-pay" class="hidden"><div class="act-bar" style="grid-template-columns:1fr;margin-bottom:8px"><button class="primary" onclick="showPayment()">💰 新增缴费</button></div><div id="payList"></div></div>
   <div id="tab-rpt" class="hidden"><div class="card"><h3>💰 经营总览</h3><div id="profitStats"></div></div><div class="card"><h3>📊 本月消课统计</h3><div class="chart-bar" id="consumptionChart"></div></div><div class="card"><h3>💵 本月收入</h3><div class="chart-bar" id="incomeChart"></div></div><div class="card"><h3>🏅 学员排行</h3><div id="rankPanel"></div></div></div>
@@ -512,27 +512,28 @@ function renderCalendar(){
   var days=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
   document.getElementById('calRange').textContent=d2s(days[0])+' ~ '+d2s(days[6]);
   var today=dt(new Date()),dn=['一','二','三','四','五','六','日'];
-  // group schedules by day
   var byDay={};schedules.forEach(function(s){var k=s.day_of_week===0?6:s.day_of_week-1;if(!byDay[k])byDay[k]=[];byDay[k].push(s)});
-  // time slots: 15:00-21:00
-  var h='<div class=tt-hd></div>';
-  for(var i=0;i<7;i++){var ds=d2s(days[i]);var cls='tt-hd'+(ds===today?' today':'');h+='<div class="'+cls+'">'+dn[i]+'<br>'+days[i].getDate()+'日</div>'}
-  for(var t=15;t<=21;t++){
-    var tl=t.toString().padStart(2,'0')+':00';
-    h+='<div class=tt-time>'+tl+'</div>';
-    for(var d=0;d<7;d++){
-      var ds=d2s(days[d]);var cls='tt-cell'+(ds===today?' today':'');
-      var dayScheds=byDay[d]||[];
-      h+='<div class="'+cls+'">';
-      dayScheds.forEach(function(s){
-        var sh=parseInt(s.time_start)||8;
-        if(sh===t){
-          var cnt=window._elist&&window._elist[s.id]?window._elist[s.id].length:0;
-          h+='<div class=tt-block style=background:'+eh(s.color||'#0F6E56')+' onclick="manageEnrollment(\''+s.id+'\')" title="'+eh(s.class_name)+' '+eh(s.coach||'')+' ('+cnt+'人)">'+eh(s.class_name)+'</div>';
-        }
-      });
-      h+='</div>';
-    }
+  // Time range: 8:00 (0) to 22:00 (840 min)
+  var h='';
+  for(var i=0;i<7;i++){
+    var ds=d2s(days[i]);var cls='tt-hd'+(ds===today?' today':'');
+    h+='<div class="'+cls+'">'+dn[i]+' '+days[i].getDate()+'日</div>';
+  }
+  // Show columns side by side (they're in the grid)
+  for(var i=0;i<7;i++){
+    var ds=d2s(days[i]);var cls='tt-col'+(ds===today?' today':'');
+    h+='<div class="'+cls+'">';
+    var dayScheds=byDay[i]||[];
+    dayScheds.forEach(function(s){
+      var sh=parseInt(s.time_start)||0,sm=parseInt((s.time_start+'').split(':')[1])||0;
+      var eh2=parseInt(s.time_end)||0,em=parseInt((s.time_end+'').split(':')[1])||0;
+      var top=(sh*60+sm-480)/840*100; // 8:00 = 0%, 22:00 = 100%
+      var h2=((eh2*60+em)-(sh*60+sm))/840*100;
+      if(top<0)top=0;if(h2<1)h2=5;
+      var cnt=window._elist&&window._elist[s.id]?window._elist[s.id].length:0;
+      h+='<div class=tt-block style=top:'+top+'%;height:'+h2+'%;background:'+eh(s.color||'#0F6E56')+' onclick="manageEnrollment(\''+s.id+'\')" title="'+eh(s.class_name)+' '+eh(s.coach||'')+' ('+cnt+'人)">'+eh(s.class_name)+'<br><span style=font-size:7px>'+s.time_start+'-'+s.time_end+'</span></div>';
+    });
+    h+='</div>';
   }
   document.getElementById('ttGrid').innerHTML=h;
 }function calShift(n){calBase.setDate(calBase.getDate()+n);renderCalendar()}
