@@ -235,7 +235,32 @@ function openM(id){document.getElementById(id).classList.add('show')}
 async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
 function hideBoxes(){['landingBox','sub-parent','sub-coach','sub-admin'].forEach(function(id){document.getElementById(id).classList.add('hidden')})}
 function showMain(){hideBoxes();document.getElementById('landingBox').classList.remove('hidden')}
-function showSub(type){hideBoxes();document.getElementById('sub-'+type).classList.remove('hidden');setTimeout(function(){var el=document.getElementById(type==='parent'?'parentPhone':type==='coach'?'tcInput':'admPw');if(el)el.focus()},200)}
+
+var _phTimer=null;
+function setupParentInput(){
+  var el=document.getElementById('parentPhone');
+  if(!el||el._bound)return;
+  el._bound=true;
+  el.oninput=function(){
+    clearTimeout(_phTimer);
+    var ph=this.value.trim().replace(/[^0-9]/g,'');
+    if(ph.length!==11)return;
+    _phTimer=setTimeout(async function(){
+      if(!sb||!sbOk)return;
+      var r=await sb.from('parent_users').select('child_name').eq('phone',ph).maybeSingle();
+      var extra=document.getElementById('parentExtra');
+      var btn=document.getElementById('parentBtn');
+      if(r.data&&r.data.child_name){
+        extra.style.display='none';
+        btn.textContent='��¼';
+      }else{
+        extra.style.display='block';
+        btn.textContent='ע��';
+      }
+    },600);
+  };
+}
+function showSub(type){hideBoxes();document.getElementById('sub-'+type).classList.remove('hidden');if(type==='parent'){setupParentInput()}setTimeout(function(){var el=document.getElementById(type==='parent'?'parentPhone':type==='coach'?'tcInput':'admPw');if(el)el.focus()},200)}
 function openModal(){document.getElementById('landingModal').classList.add('show');showMain()}
 
 // Auth
