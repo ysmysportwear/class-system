@@ -179,6 +179,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <div class="admin-login-link" onclick="showSub('admin')">🔑 校长登录</div>
   </div>
   <div class="box hidden" id="sub-parent"><h3>📱 家长登录</h3><p>请输入手机号，首次自动注册</p><input id="parentPhone" type="tel" placeholder="输入11位手机号" maxlength="11" inputmode="numeric"><button class="btn-green" onclick="parentLogin()">登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
+  <div class="box hidden" id="sub-child"><h3>👶 孩子信息</h3><p>请完善孩子的基本信息</p><input id="childName" placeholder="孩子姓名"><input id="childTeam" placeholder="教练团队码" style="margin-top:6px"><select id="childAvatar" style="width:100%;padding:12px 14px;border:2px solid #e8e8e3;border-radius:12px;font-size:16px;margin-top:6px;outline:none"><option>🧒</option><option>👦</option><option>👧</option><option>🧑</option><option>👨</option><option>👩</option><option>🏃</option><option>⛸️</option></select><button class="btn-green" onclick="registerChild()" style="margin-top:10px">完成注册</button><div class="back-link"><span onclick="showSub('parent')">← 返回</span></div></div>
   <div class="box hidden" id="sub-coach"><h3>👨‍🏫 教练登录</h3><p>请输入俱乐部团队码</p><input id="tcInput" placeholder="例: TEAM001"><button class="btn-green" onclick="joinTeam()">进入系统</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
   <div class="box hidden" id="sub-admin"><h3>🔑 校长登录</h3><p>请输入管理密码</p><input id="admPw" type="password" placeholder="密码"><button class="btn-green" onclick="doAdminLogin()">登录</button><div class="back-link"><span onclick="showMain()">← 返回</span></div></div>
 </div>
@@ -323,7 +324,7 @@ var _tt;function ts(m){var e=document.getElementById('toast');e.textContent=m;e.
 function closeM(id){document.getElementById(id).classList.remove('show')}
 function openM(id){document.getElementById(id).classList.add('show')}
 async function s256(t){var e=new TextEncoder().encode(t);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
-function hideBoxes(){['landingBox','sub-parent','sub-coach','sub-admin'].forEach(function(id){document.getElementById(id).classList.add('hidden')})}
+function hideBoxes(){['landingBox','sub-parent','sub-coach','sub-admin','sub-child'].forEach(function(id){document.getElementById(id).classList.add('hidden')})}
 function showMain(){hideBoxes();document.getElementById('landingBox').classList.remove('hidden')}
 function showSub(type){hideBoxes();document.getElementById('sub-'+type).classList.remove('hidden');setTimeout(function(){var el=document.getElementById(type==='parent'?'parentPhone':type==='coach'?'tcInput':'admPw');if(el)el.focus()},200)}
 function openModal(){document.getElementById('landingModal').classList.add('show');showMain()}
@@ -341,11 +342,26 @@ async function parentLogin(){
   if(!sb||!sbOk){ts('网络连接中...');return}
   var exist=await sb.from('parent_users').select('id,team_code').eq('phone',phone).maybeSingle();
   if(exist.data&&exist.data.id){tc=exist.data.team_code;isAdm=false;localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);document.getElementById('landingModal').classList.remove('show');enterParent();ts('欢迎回来')}else{
-    var tcInput=prompt('请输入教练提供的团队码：');if(!tcInput)return;
-    tc=tcInput.trim().toUpperCase();
-    await sb.from('parent_users').insert({phone:phone,team_code:tc});
-    isAdm=false;localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);document.getElementById('landingModal').classList.remove('show');enterParent();ts('注册成功')
+    localStorage.setItem('reg_phone',phone);
+    hideBoxes();document.getElementById('sub-child').classList.remove('hidden');
   }
+}
+
+async function registerChild(){
+  var phone=localStorage.getItem('reg_phone');
+  var name=document.getElementById('childName').value.trim();
+  var team=document.getElementById('childTeam').value.trim().toUpperCase();
+  var avatar=document.getElementById('childAvatar').value;
+  if(!name){ts('请输入孩子姓名');return}
+  if(!team){ts('请输入教练团队码');return}
+  tc=team;isAdm=false;
+  // Save parent record
+  await sb.from('parent_users').insert({phone:phone,team_code:tc,child_name:name,child_photo:''});
+  // Save student record
+  await sb.from('students').insert({team_code:tc,name:name,parent_phone:phone,avatar:avatar,coach:tc,total_units:0,used_units:0,status:'active'});
+  localStorage.setItem('cls_tc',tc);localStorage.setItem('cls_r','parent');localStorage.setItem('cls_phone',phone);
+  document.getElementById('landingModal').classList.remove('show');
+  enterParent();ts('注册成功，欢迎！')
 }
 async function joinTeam(){
   var code=document.getElementById('tcInput').value.trim().toUpperCase();
