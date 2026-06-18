@@ -173,18 +173,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 </head>
 <body>
 
-<div class="page" id="app">
-  <div class="hdr"><h1>🛼 轮滑俱乐部课消系统</h1><p>Professional Edition</p><div class="club-name" id="clubName"><span>🏆 </span><span id="clubNameText"></span></div></div>
-  
-  <div class="tm-bar">
-    <span style="font-size:11px;color:var(--t3)">团队</span>
-    <span class="code" id="tmDisp">未加入</span>
-    <span class="role-tag c" id="rC">教练</span>
-    <span class="role-tag b" id="rB">管理员</span>
-    <span class="role-tag p" id="rP">家长</span>
-    <button class="bts" onclick="logoutTeam()">切换</button>
-  </div>
-
   <!-- LANDING PAGE -->
   <div class="landing" id="landingPage">
     <div class="particles">
@@ -210,6 +198,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
         <span style="cursor:pointer;text-decoration:underline" onclick="showAdminLogin();closeLandingModal()">🔑 管理员登录</span>
       </div>
     </div>
+
+<div class="page" id="app">
+  <div class="hdr"><h1>🛼 轮滑俱乐部课消系统</h1><p>Professional Edition</p><div class="club-name" id="clubName"><span>🏆 </span><span id="clubNameText"></span></div></div>
+  
+  <div class="tm-bar">
+    <span style="font-size:11px;color:var(--t3)">团队</span>
+    <span class="code" id="tmDisp">未加入</span>
+    <span class="role-tag c" id="rC">教练</span>
+    <span class="role-tag b" id="rB">管理员</span>
+    <span class="role-tag p" id="rP">家长</span>
+    <button class="bts" onclick="logoutTeam()">切换</button>
+  </div>
+
+
   </div>
 
   <!-- Main -->
