@@ -154,7 +154,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div class="tm-bar">
     <span style="font-size:11px;color:var(--t3)">团队</span><span class="code" id="tmDisp">未加入</span>
     <span class="role-tag c" id="rC">教练</span><span class="role-tag b" id="rB">校长</span>
-    <button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
+    <button class="bts" onclick="showCoachManager()" id="btnSched" style="display:none">课程管理</button><button class="bts" onclick="showCoachManager()" id="btnCM" style="display:none">教练管理</button>
     <button class="bts" onclick="changeAdminPw()" id="btnCP" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()" style="color:var(--r)">退出</button>
   </div>
@@ -210,6 +210,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 <div class="fld"><label>备注</label><input id="payNote"></div>
 <div class="btns"><button class="cancel" onclick="closeM('payModal')">取消</button><button class="confirm" onclick="savePayment()">保存</button></div></div></div>
 
+
+<div class="modal-bg" id="schedModal"><div class="modal"><h3>课程管理</h3>
+<div style="margin-bottom:16px;padding:12px;background:var(--gb);border-radius:12px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">添加课程</div>
+<div class="row"><div class="fld"><label>课程名称</label><input id="smName" placeholder="如：初级轮滑"></div><div class="fld"><label>教练</label><input id="smCoach"></div></div>
+<div class="row"><div class="fld"><label>星期</label><select id="smDay"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></div><div class="fld"><label>颜色</label><select id="smColor"><option value="#0F6E56">绿</option><option value="#3872E0">蓝</option><option value="#E24B4A">红</option><option value="#E6950B">橙</option><option value="#7B61FF">紫</option></select></div></div>
+<div class="row"><div class="fld"><label>开始</label><input id="smStart" type="time" value="16:00"></div><div class="fld"><label>结束</label><input id="smEnd" type="time" value="18:00"></div></div>
+<button style="width:100%;padding:10px;margin-top:6px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--g);color:#fff" onclick="addSchedule()">添加</button></div>
+<div id="schedList" style="max-height:250px;overflow-y:auto"></div>
+<div class="btns" style="margin-top:12px"><button class="cancel" onclick="closeM('schedModal')">关闭</button></div></div></div>
 <div class="modal-bg" id="coachModal"><div class="modal"><h3>👨‍🏫 教练管理</h3>
 <div style="margin-bottom:16px;padding:12px;background:var(--gb);border-radius:12px">
 <div style="font-size:12px;font-weight:700;margin-bottom:8px">生成新教练码</div>
@@ -294,7 +304,7 @@ function enter(){
   document.getElementById('appMain').classList.remove('hidden');document.getElementById('fabBtn').classList.remove('hidden');
   document.getElementById('tmDisp').textContent=isAdm?'ALL':tc;
   document.getElementById('rC').classList.toggle('on',!isAdm);document.getElementById('rB').classList.toggle('on',isAdm);
-  document.getElementById('btnCM').style.display=isAdm?'inline':'none';
+  document.getElementById('btnSched').style.display=isAdm?'inline':'none';document.getElementById('btnCM').style.display=isAdm?'inline':'none';
   document.getElementById('btnCP').style.display=isAdm?'inline':'none';
   loadAll();
 }
@@ -303,7 +313,7 @@ function enter(){
 function switchTab(t){curTab=t;document.querySelectorAll('#topTabs button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t)});['dash','cal','stu','pay','rpt'].forEach(function(x){document.getElementById('tab-'+x).classList.toggle('hidden',x!==t)});if(t==='dash'){renderStats();renderToday();renderRenew()}if(t==='cal')renderCalendar();if(t==='stu')renderStudents();if(t==='pay')renderPayments();if(t==='rpt')renderReports()}
 
 // Data
-function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments()}
+function loadAll(){if(!sb||!sbOk){setTimeout(loadAll,800);return}loadStudents();loadAttendance();loadPayments();loadSchedules()}
 async function loadStudents(){var q=sb.from('students').select('*').order('created_at',{ascending:false});if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)students=r.data||[];updateCoachFilter();if(curTab==='stu')renderStudents();if(curTab==='dash'){renderStats();renderRenew()}if(curTab==='cal')renderCalendar()}
 async function loadAttendance(){var q=sb.from('attendance').select('*').order('class_date',{ascending:false}).limit(200);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)attendance=r.data||[];if(curTab==='dash')renderToday();if(curTab==='rpt')renderReports()}
 async function loadPayments(){var q=sb.from('payments').select('*').order('payment_date',{ascending:false}).limit(100);if(!isAdm)q=q.eq('team_code',tc);var r=await q;if(!r.error)payments=r.data||[];if(curTab==='pay')renderPayments();if(curTab==='rpt')renderReports()}
@@ -401,7 +411,7 @@ async function doBatchCheckin(){if(batchSel.length===0){ts('请先勾选学员')
 }
 
 // Calendar
-function renderCalendar(){
+function renderCalendar(){loadSchedDisplay();
   var mon=new Date(calBase),days=[],today=dt(new Date()),sel=dt(calBase);
   for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
   document.getElementById('calRange').textContent=d2s(days[0])+' ~ '+d2s(days[6]);
@@ -441,6 +451,46 @@ async function viewCoachParents(code){
     r.data.forEach(function(p,i){msg+=(i+1)+'. '+p.child_name+' '+p.phone+'\n'});
   }else{msg+='(none)'}
   alert(msg);
+}
+
+var schedules=[];
+async function loadSchedules(){
+  if(!sb||!sbOk)return;
+  var r=await sb.from('class_schedule').select('*').eq('team_code',tc).order('day_of_week').order('time_start');
+  if(!r.error)schedules=r.data||[];
+  renderCalendar();renderSchedList();
+}
+function renderSchedList(){
+  var el=document.getElementById('schedList');if(!el)return;
+  if(!schedules.length){el.innerHTML='<div class=empty>no classes</div>';return}
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],h='';
+  schedules.forEach(function(s){
+    h+='<div style=display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;border-left:4px solid '+eh(s.color||'#0F6E56')+'>';
+    h+='<div><b>'+eh(s.class_name||'')+'</b> '+days[s.day_of_week]+' '+s.time_start+'-'+s.time_end+' '+eh(s.coach||'')+'</div>';
+    h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteSchedule("'+s.id+'")>X</span></div>';
+  });el.innerHTML=h;
+}
+async function addSchedule(){
+  var nm=document.getElementById('smName').value.trim(),coach=document.getElementById('smCoach').value.trim();
+  var day=parseInt(document.getElementById('smDay').value),start=document.getElementById('smStart').value,end=document.getElementById('smEnd').value,color=document.getElementById('smColor').value;
+  if(!nm){ts('need name');return}
+  var r=await sb.from('class_schedule').insert({team_code:tc,class_name:nm,coach:coach,day_of_week:day,time_start:start,time_end:end,color:color});
+  if(r.error){ts('failed');return}
+  document.getElementById('smName').value='';document.getElementById('smCoach').value='';loadSchedules();ts('added');
+}
+async function deleteSchedule(id){if(!confirm('Delete?'))return;await sb.from('class_schedule').delete().eq('id',id);loadSchedules()}
+function showSchedManager(){loadSchedules();openM('schedModal')}
+function loadSchedDisplay(){
+  if(!schedules.length)return;
+  var cells=document.querySelectorAll('#calGrid .day');
+  if(!cells.length)return;
+  var mon=new Date(calBase);
+  schedules.forEach(function(s){
+    var idx=(s.day_of_week-mon.getDay()+7)%7;
+    if(idx<0||idx>=7)return;
+    var cell=cells[idx];
+    if(cell){cell.style.background='var(--card)';cell.style.borderLeft='3px solid '+s.color;cell.innerHTML+='<div style=font-size:8px;margin-top:2px;color:'+s.color+'>'+eh(s.class_name||'')+'</div>'}
+  });
 }
 </script>
 </body>
