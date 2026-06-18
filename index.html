@@ -203,7 +203,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
     <span style="font-size:11px;color:var(--t3)">团队</span>
     <span class="code" id="tmDisp">未加入</span>
     <span class="role-tag c" id="rC">教练</span>
-    <span class="role-tag b" id="rB">管理员</span>
+    <span class="role-tag b" id="rB">校长</span>
+    <button class="bts" onclick="changeAdminPw()" id="btnChPw" style="display:none">改密</button>
     <button class="bts" onclick="logoutTeam()">切换</button>
   </div>
 
@@ -405,6 +406,7 @@ function enter(){
   document.getElementById('tmDisp').textContent=isAdm?'ALL':tc;
   document.getElementById('rC').classList.toggle('on',isAdm);
   document.getElementById('rB').classList.toggle('on',isAdm);
+  document.getElementById('btnChPw').style.display=isAdm&&tc&&tc!=='ADMIN'?'inline':'none';
   loadAll();
 }
 function showLandingMain(){hideAllBoxes();document.getElementById('landingBox').classList.remove('hidden')}
@@ -415,10 +417,39 @@ function showAdminLogin(){hideAllBoxes();document.getElementById('adminLoginBox'
 function openLandingModal(){document.getElementById('landingModal').classList.add('show');showLandingMain()}
 async function doAdminLogin(){
   var pw=document.getElementById('admPw').value;if(!pw){ts('请输入密码');return}
-  if(await s256(pw)==='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33'){
-    isAdm=true;localStorage.setItem('cc_r','boss');closeM('admModal');document.getElementById('admPw').value='';
-    if(!tc){tc='ADMIN'}enter();ts('🔑 管理员已登录');
-  }else{ts('密码错误');document.getElementById('admPw').value=''}
+  var inputHash=await s256(pw);
+  // 尝试从 team_profiles 获取该团队的密码哈希
+  var profilePw=null;
+  if(sb&&sbOk&&tc&&tc!=='ADMIN'){
+    var r=await sb.from('team_profiles').select('admin_password_hash').eq('team_code',tc).maybeSingle();
+    if(r.data) profilePw=r.data.admin_password_hash;
+  }
+  // 如果团队没有设置密码，先用默认密码 CG5166
+  if(!profilePw) profilePw='d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33';
+  if(inputHash===profilePw){
+    isAdm=true;role='boss';localStorage.setItem('cc_r','boss');
+    document.getElementById('adminLoginBox').classList.add('hidden');
+    document.getElementById('landingModal').classList.remove('show');
+    document.getElementById('admPw').value='';
+    if(!tc){tc='ADMIN'}enterAnimated();ts('🔑 校长已登录');
+  }else{ts('❌ 密码错误');document.getElementById('admPw').value=''}
+}
+
+// 校长自助修改密码
+async function changeAdminPw(){
+  if(!isAdm||!tc||tc==='ADMIN'){ts('请先以团队身份登录');return}
+  var old=prompt('请输入当前密码：');if(!old)return;
+  var oldHash=await s256(old);
+  var r=await sb.from('team_profiles').select('admin_password_hash').eq('team_code',tc).maybeSingle();
+  var stored=r.data?r.data.admin_password_hash:'d99e79ccafe31ab1e6117774f424ef9b822098f37c1441c683797ea67bb88b33';
+  if(oldHash!==stored){ts('❌ 当前密码错误');return}
+  var n1=prompt('请输入新密码：');if(!n1)return;
+  var n2=prompt('请再次输入新密码：');if(!n2)return;
+  if(n1!==n2){ts('两次输入不一致');return}
+  var newHash=await s256(n1);
+  var ur=await sb.from('team_profiles').update({admin_password_hash:newHash}).eq('team_code',tc);
+  if(ur.error){ts('修改失败');return}
+  ts('✅ 密码已更新')
 }
 
 // ===== TABS =====
