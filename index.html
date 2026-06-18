@@ -320,7 +320,7 @@ async function loadCoachList(){
   var h='';
   r.data.forEach(function(c){if(c.team_code==='__ADMIN__')return;var st=stats[c.team_code]||{s:0,u:0,p:0};
     h+='<div style=padding:8px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px>';
-    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+'<span style=cursor:pointer onclick=viewCoachParents("+c.team_code+")><b>'+eh(c.coach_name||'Coach')+'</b></span> '+eh(c.team_code)+'</span>';
+    h+='<div style=display:flex;justify-content:space-between;margin-bottom:4px><span><b>'+'<span style=cursor:pointer data-code="+c.team_code+" style=cursor:pointer class=coach-row><b>'+eh(c.coach_name||'Coach')+'</b></span> '+eh(c.team_code)+'</span>';
     h+='<span style=cursor:pointer;color:var(--r);font-weight:700 onclick=deleteCoach("'+c.team_code+'")>X</span></div>';
     h+='<div style=display:flex;gap:12px;color:var(--t3);font-size:10px><span>学员:'+st.s+'</span><span>消课:'+st.u+'</span><span>收费:'+st.p+'</span></div></div>';
   });el.innerHTML=h||'<div class=empty>暂无教练</div>';
@@ -429,6 +429,8 @@ async function savePayment(){var sid=document.getElementById('payStudent').value
 // Reports
 function renderReports(){var n=new Date(),cm=n.getMonth(),cy=n.getFullYear(),consM={},incM={},stuM={};for(var i=1;i<=31;i++){var d=cy+'-'+(cm+1).toString().padStart(2,'0')+'-'+i.toString().padStart(2,'0');consM[d]=0;incM[d]=0}attendance.forEach(function(a){var k=a.class_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0'))){consM[k]=(consM[k]||0)+(a.units_deducted||0);stuM[a.student_id]=(stuM[a.student_id]||0)+(a.units_deducted||0)}});payments.forEach(function(p){var k=p.payment_date;if(k&&k.startsWith(cy+'-'+(cm+1).toString().padStart(2,'0')))incM[k]=(incM[k]||0)+(p.amount||0)});var mC=Math.max.apply(null,Object.values(consM))||1,mI=Math.max.apply(null,Object.values(incM))||1;var ch='',keys=Object.keys(consM).sort();for(var i=0;i<keys.length;i++){var v=consM[keys[i]]||0;ch+='<div class="col"><div class="bar" style="height:'+(v/mC*100)+'px"></div><div class="lbl">'+keys[i].slice(8)+'</div></div>'}document.getElementById('consumptionChart').innerHTML=ch||'<div class="empty">无数据</div>';var ih='';keys.forEach(function(k){var v=incM[k]||0;ih+='<div class="col"><div class="bar income" style="height:'+(v/mI*100)+'px"></div><div class="lbl">'+k.slice(8)+'</div></div>'});document.getElementById('incomeChart').innerHTML=ih||'<div class="empty">无数据</div>';var rk=Object.entries(stuM).sort(function(a,b){return b[1]-a[1]}).slice(0,10),rh='';rk.forEach(function(e,i){var s=students.find(function(x){return x.id===e[0]});rh+='<div class="hist-item"><div class="avatar-sm">'+(i+1)+'</div><div class="info"><div class="n">'+eh((s&&s.name)||'?')+'</div></div><div class="delta down">'+e[1]+'</div></div>'});document.getElementById('rankPanel').innerHTML=rh||'<div class="empty">无数据</div>'}
 
+
+document.addEventListener('click',function(e){var row=e.target.closest('.coach-row');if(row){var code=row.getAttribute('data-code');if(code)viewCoachParents(code)}});
 init();
 
 async function viewCoachParents(code){
